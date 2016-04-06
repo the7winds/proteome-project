@@ -19,5 +19,7 @@ public class Main {
         SearchVariantPeptideResults results = SearchVariantPeptide.main(ProjectPaths.getTsv(),
                 ProjectPaths.getContribution(),
                 ProjectPaths.getOutput());
+
+        SpectrumAnnotation.main(results, ProjectPaths.getOutput());
     }
 }
