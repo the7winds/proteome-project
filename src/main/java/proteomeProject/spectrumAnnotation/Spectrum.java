@@ -12,7 +12,7 @@ public class Spectrum {
     private final SortedMap<Double, List<IonType>> peaks = new TreeMap<>();
     private final double precursorMass;
 
-    Spectrum(File specFile, int scans) throws IOException {
+    public Spectrum(File specFile, int scans) throws IOException {
         this.scans = scans;
         Scanner scanner = new Scanner(specFile);
         scanner.useDelimiter("\\r\\n");
@@ -42,8 +42,8 @@ public class Spectrum {
         return scans;
     }
 
-    public SortedSet<Double> getPeaks() {
-        return (SortedSet<Double>) peaks.keySet();
+    public Double[] getPeaks() {
+        return peaks.keySet().toArray(new Double[peaks.size()]);
     }
 
     public SortedMap<Double, List<IonType>> getFullInfoPeaks() { return peaks; }

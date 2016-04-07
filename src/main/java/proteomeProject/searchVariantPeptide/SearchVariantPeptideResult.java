@@ -1,8 +1,9 @@
 package proteomeProject.searchVariantPeptide;
 
 import org.apache.commons.lang3.StringUtils;
-import proteomeProject.searchVariantPeptide.ContributionContainer.SpecResult;
+import proteomeProject.ContributionWrapper.Tag;
 import proteomeProject.utils.Chemicals;
+import proteomeProject.utils.Utils;
 
 /**
  * Created by the7winds on 23.03.16.
@@ -15,15 +16,15 @@ import proteomeProject.utils.Chemicals;
 public class SearchVariantPeptideResult {
 
     private final DBResult dbResult;
-    private final SpecResult specResult;
+    private final Tag tag;
     private final boolean reverse;
     private final double delta;
 
     public SearchVariantPeptideResult(DBResult dbResult,
-                                      SpecResult specResult,
+                                      Tag tag,
                                       boolean reverse) {
         this.dbResult = dbResult;
-        this.specResult = specResult;
+        this.tag = tag;
         this.reverse = reverse;
 
         String preTag;
@@ -35,12 +36,12 @@ public class SearchVariantPeptideResult {
             preTag = getPeptide().substring(getPeptide().lastIndexOf(reverseTag) + reverseTag.length());
         }
 
-        delta = getOffset() - (Chemicals.AminoAcid.evalTotalMass(preTag) + (reverse ? Chemicals.H2O.getMass() : 0));
+        delta = getOffset() - (Utils.evalTotalMass(preTag) + (reverse ? Chemicals.H2O.getMass() : 0));
     }
 
     public SearchVariantPeptideResult(DBResult dbResult) {
         this.dbResult = dbResult;
-        specResult = null;
+        tag = null;
         reverse = false;
         delta = 0;
     }
@@ -62,11 +63,11 @@ public class SearchVariantPeptideResult {
     }
 
     public String getTag() {
-        return specResult.getTag();
+        return tag.getTag();
     }
 
     public double getOffset() {
-        return specResult.getOffset();
+        return tag.getOffset();
     }
 
     public double getDelta() {

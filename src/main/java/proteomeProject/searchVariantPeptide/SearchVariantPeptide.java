@@ -4,6 +4,7 @@ import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 import org.apache.commons.lang3.StringUtils;
+import proteomeProject.ContributionWrapper;
 
 import java.io.PrintStream;
 import java.nio.file.Path;
@@ -25,43 +26,39 @@ public class SearchVariantPeptide {
     private final static String VARIANT_TAG = "variant";
 
     private final Path tsvPath;
-    private final Path contributionPath;
 
-    private SearchVariantPeptide(Path tsvPath, Path contributionPath) {
+    private SearchVariantPeptide(Path tsvPath) {
         this.tsvPath = tsvPath;
-        this.contributionPath = contributionPath;
     }
 
-    public static SearchVariantPeptideResults main(Path tsvPath, Path contributionPath, PrintStream output) {
-        SearchVariantPeptideResults results = new SearchVariantPeptide(tsvPath, contributionPath).search();
+    public static SearchVariantPeptideResults main(Path tsvPath, PrintStream output) {
+        SearchVariantPeptideResults results = new SearchVariantPeptide(tsvPath).search();
         new SearchReportPrinter(output).print(results);
         return results;
     }
 
     private SearchVariantPeptideResults search() {
         Collection<DBResult> variantPeptidesDBResults = getVariantPeptidesDBResults();
-        ContributionContainer contributionContainer =
-                new ContributionContainer(contributionPath);
 
         final Collection<SearchVariantPeptideResult> tagFoundResults = new LinkedList<>();
         final Collection<SearchVariantPeptideResult> tagNotFoundResults = new LinkedList<>();
         final Collection<SearchVariantPeptideResult> tagNotExistsResults = new LinkedList<>();
 
         for (DBResult dbResult : variantPeptidesDBResults) {
-            ContributionContainer.SpecResult specResult = contributionContainer.findByFileAndSpectrum(dbResult);
-            if (specResult != null) {
+            ContributionWrapper.Tag tag = ContributionWrapper.getInstance().findByFileAndSpec(dbResult);
+            if (tag != null) {
                 boolean foundResults = false;
 
-                if (dbResult.getPeptide().contains(specResult.getTag())) {
+                if (dbResult.getPeptide().contains(tag.getTag())) {
                     foundResults = true;
-                    tagFoundResults.add(new SearchVariantPeptideResult(dbResult, specResult, false));
+                    tagFoundResults.add(new SearchVariantPeptideResult(dbResult, tag, false));
                 }
 
-                String reverseTag = StringUtils.reverse(specResult.getTag());
+                String reverseTag = StringUtils.reverse(tag.getTag());
 
                 if (dbResult.getPeptide().contains(reverseTag)) {
                     foundResults = true;
-                    tagFoundResults.add(new SearchVariantPeptideResult(dbResult, specResult, true));
+                    tagFoundResults.add(new SearchVariantPeptideResult(dbResult, tag, true));
                 }
 
                 if (!foundResults) {

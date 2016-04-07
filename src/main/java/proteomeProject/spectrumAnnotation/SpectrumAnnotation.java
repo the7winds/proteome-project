@@ -1,19 +1,16 @@
 package proteomeProject.spectrumAnnotation;
 
-import javafx.util.Pair;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResult;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
 import proteomeProject.utils.Chemicals;
-import proteomeProject.utils.Chemicals.AminoAcid;
 import proteomeProject.utils.Printer;
 import proteomeProject.utils.ProjectPaths;
+import proteomeProject.utils.Utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static proteomeProject.spectrumAnnotation.IonType.Type.B;
 import static proteomeProject.spectrumAnnotation.IonType.Type.Y;
@@ -58,35 +55,38 @@ public class SpectrumAnnotation {
         annotateIons(spectrum, peptide, Y);
     }
 
-    private static void annotateIons(Spectrum spectrum, String peptide, IonType.Type type) {
-        Set<Double> peaks = spectrum.getPeaks();
+    public static void annotateIons(Spectrum spectrum, String peptide, IonType.Type type) {
+        List<Double> tmp = Utils.getPrefixes(peptide, type);
+        Double[] prefixMass = Utils.getPrefixes(peptide, type).toArray(new Double[tmp.size()]);
+        annotateIons(spectrum, prefixMass, type);
+    }
 
-        Double[] prefixMass = getPrefixes(peptide, type);
+    public static void annotateIons(Spectrum spectrum, Double[] prefixMass, IonType.Type type) {
+        Double[] peaks = spectrum.getPeaks();
         int pLen = prefixMass.length;
-
         double eps = 0.6;
         int i = 0;
 
         for (double peak : peaks) {
             for (; i < pLen; ++i) {
                 if (Math.abs(prefixMass[i] - peak) < eps) {
-                    spectrum.annotatePeak(peak, new IonType(null, type, i + 1));
+                    spectrum.annotatePeak(peak, new IonType(null, type, i));
                     ++i;
                     break;
                 } else if (Math.abs(prefixMass[i] - (peak - H2O.getMass())) < eps) {
-                    spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O }, type, i + 1));
+                    spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O }, type, i));
                     ++i;
                     break;
                 } else if (Math.abs(prefixMass[i] - (peak - NH3.getMass())) < eps) {
-                    spectrum.annotatePeak(peak, new IonType(new Chemicals[] { NH3 }, type, i + 1));
+                    spectrum.annotatePeak(peak, new IonType(new Chemicals[] { NH3 }, type, i));
                     ++i;
                     break;
                 } else if (Math.abs(prefixMass[i] - (peak - NH3.getMass() - H2O.getMass())) < eps) {
-                    spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O, NH3 }, type, i + 1));
+                    spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O, NH3 }, type, i));
                     ++i;
                     break;
                 } else if (Math.abs(prefixMass[i] - (peak - 2 * H2O.getMass() - peak)) < eps) {
-                    spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O, H2O }, type, i + 1));
+                    spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O, H2O }, type, i));
                     ++i;
                     break;
                 } else if (prefixMass[i] - peak > eps) {
@@ -95,52 +95,6 @@ public class SpectrumAnnotation {
                     continue;
                 }
             }
-        }
-    }
-
-    private static Double[] getPrefixes(String peptide, IonType.Type type) {
-        List<Pair<Double, Boolean>> masses = new LinkedList<>();
-        for (int i = 0; i < peptide.length();) {
-            if (peptide.charAt(i) == '+') {
-                int t;
-                for (t = 0; !Character.isAlphabetic(peptide.charAt(i + t)); ++t);
-                masses.add(new Pair<>(Double.valueOf(peptide.substring(i + 1, i + t)), false));
-                i += t;
-            } else {
-                masses.add(new Pair<>(AminoAcid.valueOf(Character.toString(peptide.charAt(i))).getAverageMass(), true));
-                i++;
-            }
-        }
-
-        double sum = masses.stream()
-                .mapToDouble(Pair::getKey)
-                .sum();
-
-        LinkedList<Double> prefix = new LinkedList<>();
-        double d = 0;
-        for (Pair<Double, Boolean> pair : masses) {
-            if (pair.getValue()) {
-                prefix.addLast((prefix.isEmpty() ? 0 : prefix.getLast()) + pair.getKey() + d);
-                d = 0;
-            } else {
-                d = pair.getKey();
-            }
-        }
-
-        if (type == B) {
-            return prefix.toArray(new Double[prefix.size()]);
-        } else {
-            LinkedList<Double> suffix = new LinkedList<>();
-            suffix.add(sum);
-            suffix.addAll(prefix.stream().map(p -> sum - p).collect(Collectors.toList()));
-            suffix.removeLast();
-
-            return suffix.stream()
-                    .mapToDouble(a -> a + H2O.getMass())
-                    .sorted()
-                    .boxed()
-                    .collect(Collectors.toList())
-                    .toArray(new Double[suffix.size()]);
         }
     }
 }

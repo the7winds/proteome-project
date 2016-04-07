@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Created by the7winds on 28.03.16.
@@ -36,6 +35,9 @@ public class ProjectPaths {
     @Option(name = "--ctb")
     private static Path contribution;
 
+    @Option(name = "--var")
+    private static Path variants;
+
     /**
      * output output
      */
@@ -62,5 +64,9 @@ public class ProjectPaths {
 
     public static PrintStream getOutput() {
         return output;
+    }
+
+    public static Path getVariants() {
+        return data.resolve(variants);
     }
 }

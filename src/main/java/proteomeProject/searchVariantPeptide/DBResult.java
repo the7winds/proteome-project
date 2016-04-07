@@ -6,7 +6,7 @@ import com.univocity.parsers.common.record.Record;
  *  Contains data base results.
  */
 
-class DBResult {
+public class DBResult {
 
     private final String specFile;
     private final String specId;

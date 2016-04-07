@@ -1,25 +1,38 @@
-package proteomeProject.searchVariantPeptide;
+package proteomeProject;
 
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
+import proteomeProject.searchVariantPeptide.DBResult;
 
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Contains results of de-novo algorithm to simplify search.
  */
 
-class ContributionContainer {
+public class ContributionWrapper {
 
-    private Map<String, Map<Integer, SpecResult>> container = new Hashtable<>();
+    private List<Tag> allTags = new LinkedList<>();
+    private Map<String, Map<Integer, Tag>> container = new Hashtable<>();
+    private static ContributionWrapper INSTANCE;
 
-    public ContributionContainer(Path contributionPath) {
+
+    public static void init(Path contributionPath) {
+        if (INSTANCE == null) {
+            INSTANCE = new ContributionWrapper(contributionPath);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public static ContributionWrapper getInstance() {
+        return INSTANCE;
+    }
+
+    private ContributionWrapper(Path contributionPath) {
         TsvParserSettings tsvParserSettings = new TsvParserSettings();
         tsvParserSettings.setHeaderExtractionEnabled(true);
         TsvParser tsvParser = new TsvParser(tsvParserSettings);
@@ -29,23 +42,28 @@ class ContributionContainer {
         for(Record record = tsvParser.parseNextRecord();
             record != null;
             record = tsvParser.parseNextRecord()) {
-            SpecResult specResult = new SpecResult(record);
-            if (!container.containsKey(specResult.getSpecFile())) {
-                container.put(specResult.getSpecFile(), new Hashtable<>());
+            Tag tag = new Tag(record);
+            allTags.add(tag);
+            if (!container.containsKey(tag.getSpecFile())) {
+                container.put(tag.getSpecFile(), new Hashtable<>());
             }
-            container.get(specResult.getSpecFile()).put(specResult.getScanId(), specResult);
+            container.get(tag.getSpecFile()).put(tag.getScanId(), tag);
         }
     }
 
-    public SpecResult findByFileAndSpectrum(DBResult dbResult) {
-        Map<Integer, SpecResult> spectrums = container.get(dbResult.getSpecFile());
-        if (spectrums != null) {
-            return spectrums.get(dbResult.getScanNum());
+    public Tag findByFileAndSpec(DBResult dbResult) {
+        Map<Integer, Tag> specs = container.get(dbResult.getSpecFile());
+        if (specs != null) {
+            return specs.get(dbResult.getScanNum());
         }
         return null;
     }
 
-    public static class SpecResult {
+    public List<Tag> getAllTags() {
+        return allTags;
+    }
+
+    public static class Tag {
 
         private final String specFile;
         private final int scanId;
@@ -54,7 +72,7 @@ class ContributionContainer {
         private final String tag;
         private final List<Double> peaks;
 
-        public SpecResult(Record record) {
+        public Tag(Record record) {
             specFile = getRealSpecFilename(record.getString(ContributionColumns.SPEC_FILE.ordinal()));
             scanId = record.getInt(ContributionColumns.SCAN_ID.ordinal());
             deNovoString = record.getString(ContributionColumns.DE_NOVO_STRING.ordinal());
@@ -66,12 +84,12 @@ class ContributionContainer {
                     .collect(Collectors.toList());
         }
 
-        public SpecResult(String specFile,
-                          int scanId,
-                          String deNovoString,
-                          double offset,
-                          String tag,
-                          List<Double> peaks) {
+        public Tag(String specFile,
+                   int scanId,
+                   String deNovoString,
+                   double offset,
+                   String tag,
+                   List<Double> peaks) {
             this.specFile = specFile;
             this.scanId = scanId;
             this.deNovoString = deNovoString;
@@ -82,6 +100,11 @@ class ContributionContainer {
 
         public String getSpecFile() {
             return specFile;
+        }
+
+        // BAD STYLE !
+        public String getSuffixedSpecFile() {
+            return specFile + "_msdeconv.msalign";
         }
 
         public int getScanId() {
@@ -100,8 +123,8 @@ class ContributionContainer {
             return tag;
         }
 
-        public List<Double> getPeaks() {
-            return peaks;
+        public Double[] getPeaks() {
+            return peaks.toArray(new Double[peaks.size()]);
         }
 
         private final static String TYPE = "_msdeconv.msalign";

@@ -1,6 +1,5 @@
 package proteomeProject.spectrumAnnotation;
 
-import proteomeProject.utils.Chemicals;
 import proteomeProject.utils.Printer;
 
 import java.io.PrintStream;
@@ -10,7 +9,7 @@ import java.util.Map;
 /**
  * Created by the7winds on 03.04.16.
  */
-class AnnotationPrinter implements Printer {
+public class AnnotationPrinter implements Printer {
 
     private static final String COLUMNS = "peak\tion type";
 

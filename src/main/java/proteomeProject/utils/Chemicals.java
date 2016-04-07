@@ -49,11 +49,10 @@ public enum Chemicals {
             return averageMass;
         }
 
-        public static double evalTotalMass(String peptide) {
-            return peptide.chars()
-                    .mapToDouble(c -> AminoAcid.valueOf(Character.valueOf((char) c).toString()).getAverageMass())
-                    .sum();
+        public static double getMass(char c) {
+            return valueOf(Character.toString(c)).getAverageMass();
         }
+
     }
 
     private final double mass;
