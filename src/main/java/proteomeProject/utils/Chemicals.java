@@ -10,8 +10,8 @@ package proteomeProject.utils;
  */
 
 public enum Chemicals {
-    H2O(18.01528),
-    NH3(17.031);
+    H2O(18.01057),
+    NH3(17.02655);
 
     /**
      * The enum describes 20 amino acids
