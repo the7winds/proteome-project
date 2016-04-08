@@ -69,13 +69,13 @@ public class SpectrumAnnotation {
             for (int i = 0; i < pLen; ++i) {
                 if (Math.abs(prefixMass[i] - peak) < eps) {
                     spectrum.annotatePeak(peak, new IonType(null, type, i));
-                } else if (Math.abs(prefixMass[i] - (peak - H2O.getMass())) < eps) {
+                } else if (Math.abs(peak - (prefixMass[i] - H2O.getMass())) < eps) {
                     spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O }, type, i));
-                } else if (Math.abs(prefixMass[i] - (peak - NH3.getMass())) < eps) {
+                } else if (Math.abs(peak - (prefixMass[i] - NH3.getMass())) < eps) {
                     spectrum.annotatePeak(peak, new IonType(new Chemicals[] { NH3 }, type, i));
-                } else if (Math.abs(prefixMass[i] - (peak - NH3.getMass() - H2O.getMass())) < eps) {
+                } else if (Math.abs(peak - (prefixMass[i] - NH3.getMass() - H2O.getMass())) < eps) {
                     spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O, NH3 }, type, i));
-                } else if (Math.abs(prefixMass[i] - (peak - 2 * H2O.getMass() - peak)) < eps) {
+                } else if (Math.abs(peak - (prefixMass[i] - 2 * H2O.getMass())) < eps) {
                     spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O, H2O }, type, i));
                 }
             }
