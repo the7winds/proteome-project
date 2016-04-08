@@ -10,7 +10,6 @@ import proteomeProject.utils.Utils;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
-import java.util.Set;
 
 import static proteomeProject.spectrumAnnotation.IonType.Type.B;
 import static proteomeProject.spectrumAnnotation.IonType.Type.Y;
@@ -64,35 +63,20 @@ public class SpectrumAnnotation {
     public static void annotateIons(Spectrum spectrum, Double[] prefixMass, IonType.Type type) {
         Double[] peaks = spectrum.getPeaks();
         int pLen = prefixMass.length;
-        double eps = 0.6;
-        int i = 0;
+        double eps = 0.02;
 
         for (double peak : peaks) {
-            for (; i < pLen; ++i) {
+            for (int i = 0; i < pLen; ++i) {
                 if (Math.abs(prefixMass[i] - peak) < eps) {
                     spectrum.annotatePeak(peak, new IonType(null, type, i));
-                    ++i;
-                    break;
                 } else if (Math.abs(prefixMass[i] - (peak - H2O.getMass())) < eps) {
                     spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O }, type, i));
-                    ++i;
-                    break;
                 } else if (Math.abs(prefixMass[i] - (peak - NH3.getMass())) < eps) {
                     spectrum.annotatePeak(peak, new IonType(new Chemicals[] { NH3 }, type, i));
-                    ++i;
-                    break;
                 } else if (Math.abs(prefixMass[i] - (peak - NH3.getMass() - H2O.getMass())) < eps) {
                     spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O, NH3 }, type, i));
-                    ++i;
-                    break;
                 } else if (Math.abs(prefixMass[i] - (peak - 2 * H2O.getMass() - peak)) < eps) {
                     spectrum.annotatePeak(peak, new IonType(new Chemicals[] { H2O, H2O }, type, i));
-                    ++i;
-                    break;
-                } else if (prefixMass[i] - peak > eps) {
-                    break;
-                } else if (peak - prefixMass[i] > eps) {
-                    continue;
                 }
             }
         }
