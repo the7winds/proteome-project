@@ -65,7 +65,7 @@ public class TagAlignment {
 
         output.println("SPEC=" + tag.getSpecFile());
         output.println("SCAN=" + tag.getScanId());
-        output.println("TAG: " + tagStr + " STARTS: " + (idx + 1));
+        output.println("TAG=" + tagStr + " FIRST=" + idx + " LAST=" + (idx + tagStr.length()));
         output.println("PEPTIDE: " + var.getPeptide());
 
         SpectrumAnnotation.annotateIons(spec, prefixes, type);
