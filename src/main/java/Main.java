@@ -6,6 +6,7 @@ import proteomeProject.searchVariantPeptide.SearchVariantPeptide;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
 import proteomeProject.spectrumAnnotation.SpectrumAnnotation;
 import proteomeProject.tagAllignment.TagAlignment;
+import proteomeProject.utils.ParsedArgs;
 import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
@@ -16,18 +17,17 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws CmdLineException, IOException {
-        CmdLineParser parser = new CmdLineParser(new ProjectPaths());
-        parser.parseArgument(args);
 
-        ContributionWrapper.init(ProjectPaths.getContribution());
-        Variants.init(ProjectPaths.getVariants());
+        ParsedArgs.parse(args);
 
-        SearchVariantPeptideResults results = SearchVariantPeptide.main(ProjectPaths.getTsv(),
-                ProjectPaths.getOutput());
+        ContributionWrapper.init(ProjectPaths.Sources.getContribution());
+        Variants.init(ProjectPaths.Sources.getVariants());
 
-        SpectrumAnnotation.main(results, ProjectPaths.getOutput());
+        SearchVariantPeptideResults results = SearchVariantPeptide.main(ProjectPaths.Sources.getTsv(),
+                ProjectPaths.Output.getSearchReport());
 
-        ProjectPaths.getOutput().println("ALIGNMENT");
-        TagAlignment.main(ProjectPaths.getOutput());
+        SpectrumAnnotation.main(results, ProjectPaths.Output.getSearchReport());
+
+        TagAlignment.main(ProjectPaths.Output.getAlignmentReport());
     }
 }

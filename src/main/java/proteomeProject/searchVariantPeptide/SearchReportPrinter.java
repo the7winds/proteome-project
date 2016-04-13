@@ -1,6 +1,8 @@
 package proteomeProject.searchVariantPeptide;
 
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 
 /**
  * Created by the7winds on 03.04.16.
@@ -16,8 +18,8 @@ class SearchReportPrinter {
 
     private PrintStream printStream = System.out;
 
-    public SearchReportPrinter(PrintStream printStream) {
-        this.printStream = printStream;
+    public SearchReportPrinter(Path output) throws FileNotFoundException {
+        this.printStream = new PrintStream(output.toFile());
     }
 
     void print(SearchVariantPeptideResults results) {

@@ -12,6 +12,7 @@ import proteomeProject.utils.Utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -20,8 +21,8 @@ import java.util.List;
 
 public class TagAlignment {
 
-    static public void main(PrintStream output) throws IOException {
-        new TagAlignment().alignAll(output);
+    static public void main(Path output) throws IOException {
+        new TagAlignment().alignAll(new PrintStream(output.toFile()));
     }
 
     void alignAll(PrintStream output) throws IOException {
@@ -42,7 +43,7 @@ public class TagAlignment {
         List<Double> tmp = Utils.getPrefixes(var.getPeptide(), type);
         Double[] prefixes = tmp.toArray(new Double[tmp.size()]);
 
-        Spectrum spec = new Spectrum(ProjectPaths.getData()
+        Spectrum spec = new Spectrum(ProjectPaths.Sources.getSources()
                 .resolve(tag.getSuffixedSpecFile())
                 .toFile(), tag.getScanId());
 

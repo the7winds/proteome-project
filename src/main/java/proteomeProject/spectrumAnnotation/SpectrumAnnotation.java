@@ -8,6 +8,7 @@ import proteomeProject.utils.Utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.List;
 
 import static proteomeProject.spectrumAnnotation.IonType.Type.B;
@@ -21,26 +22,37 @@ import static proteomeProject.utils.Chemicals.NH3;
 public class SpectrumAnnotation {
 
     private static final String TAG_FOUND = "TAG FOUND:";
+    private static final String TAG_NOT_FOUND = "TAG NOT FOUND";
     private static final String TAG_NOT_EXISTS = "TAG NOT EXISTS";
 
     public static void main(SearchVariantPeptideResults variantPeptideResults,
-                            PrintStream output) throws IOException {
+                            Path output) throws IOException {
 
-        output.println(TAG_FOUND);
-        final AnnotationPrinter printer = new AnnotationPrinter(output);
+        PrintStream printStream = new PrintStream(output.toFile());
+        printStream.println(TAG_FOUND);
+        final AnnotationPrinter printer = new AnnotationPrinter(printStream);
 
         for (SearchVariantPeptideResult variantPeptideResult : variantPeptideResults.getTagFoundResults()) {
             // if (variantPeptideResult.getDelta() )
-            Spectrum spectrum = new Spectrum(ProjectPaths.getData()
+            Spectrum spectrum = new Spectrum(ProjectPaths.Sources.getSources()
                     .resolve(variantPeptideResult.getFilename())
                     .toFile(), variantPeptideResult.getScanNum());
             annotate(spectrum, variantPeptideResult.getPeptide());
             printer.print(spectrum, variantPeptideResult.getPeptide());
         }
 
-        output.println(TAG_NOT_EXISTS);
+        printStream.println(TAG_NOT_FOUND);
+        for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotFoundResults()) {
+            Spectrum spectrum = new Spectrum(ProjectPaths.Sources.getSources()
+                    .resolve(variantPeptideResult.getFilename())
+                    .toFile(), variantPeptideResult.getScanNum());
+            annotate(spectrum, variantPeptideResult.getPeptide());
+            printer.print(spectrum, variantPeptideResult.getPeptide());
+        }
+
+        printStream.println(TAG_NOT_EXISTS);
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotExistsResults()) {
-            Spectrum spectrum = new Spectrum(ProjectPaths.getData()
+            Spectrum spectrum = new Spectrum(ProjectPaths.Sources.getSources()
                     .resolve(variantPeptideResult.getFilename())
                     .toFile(), variantPeptideResult.getScanNum());
             annotate(spectrum, variantPeptideResult.getPeptide());

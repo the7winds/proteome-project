@@ -6,6 +6,7 @@ import com.univocity.parsers.tsv.TsvParserSettings;
 import org.apache.commons.lang3.StringUtils;
 import proteomeProject.ContributionWrapper;
 
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -31,7 +32,7 @@ public class SearchVariantPeptide {
         this.tsvPath = tsvPath;
     }
 
-    public static SearchVariantPeptideResults main(Path tsvPath, PrintStream output) {
+    public static SearchVariantPeptideResults main(Path tsvPath, Path output) throws FileNotFoundException {
         SearchVariantPeptideResults results = new SearchVariantPeptide(tsvPath).search();
         new SearchReportPrinter(output).print(results);
         return results;

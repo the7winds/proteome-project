@@ -1,72 +1,92 @@
 package proteomeProject.utils;
 
-import org.kohsuke.args4j.Option;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Path;
+
+import static proteomeProject.utils.ParsedArgs.*;
 
 /**
  * Created by the7winds on 28.03.16.
  */
 
 /**
- * Singleton class contains arguments
+ * contains arguments
  */
 
 public class ProjectPaths {
 
-    /**
-     * path to data directory
-     */
-    @Option(name = "--data")
-    private static Path data;
-
-    /**
-     * path to tsv file
-     */
-    @Option(name = "--tsv")
-    private static Path tsv;
+    static void resolveProjectPaths() throws IOException {
+        Sources.resolveSourcesPaths();
+        Output.resolveOutputPaths();
+    }
 
     /**
-     * path to contribution file
+     * contains paths to source files
      */
-    @Option(name = "--ctb")
-    private static Path contribution;
 
-    @Option(name = "--var")
-    private static Path variants;
+    public static final class Sources {
+
+        private static Path tsv;
+        private static Path contribution;
+        private static Path variants;
+
+        private Sources() {
+        }
+
+        private static void resolveSourcesPaths() {
+            tsv = sources.resolve(ParsedArgs.tsv);
+            contribution = sources.resolve(ParsedArgs.contribution);
+            variants = sources.resolve(ParsedArgs.variants);
+        }
+
+        public static Path getSources() {
+            return sources;
+        }
+
+        public static Path getTsv() {
+            return tsv;
+        }
+
+        public static Path getContribution() {
+            return contribution;
+        }
+
+        public static Path getVariants() {
+            return variants;
+        }
+    }
 
     /**
-     * output output
+     * contains paths to the program's output
      */
-    private static PrintStream output = System.out;
 
-    @Option(name = "-f")
-    private static void setOutput(String path) throws IOException {
-        File file = new File(path);
-        file.createNewFile();
-        output = new PrintStream(file);
-    }
+    public static final class Output {
 
-    public static Path getData() {
-        return data;
-    }
+        private static Path searchReport;
+        private static Path alignmentReport;
 
-    public static Path getTsv() {
-        return data.resolve(tsv);
-    }
+        private Output() {
+        }
 
-    public static Path getContribution() {
-        return data.resolve(contribution);
-    }
+        private static void resolveOutputPaths() throws IOException {
+            searchReport = output.resolve(SEARCH_REPORT);
+            alignmentReport = output.resolve(ALIGNMENT_REPORT);
 
-    public static PrintStream getOutput() {
-        return output;
-    }
+            output.toFile().mkdir();
+            searchReport.toFile().createNewFile();
+            alignmentReport.toFile().createNewFile();
+        }
 
-    public static Path getVariants() {
-        return data.resolve(variants);
+        public static Path getOutput() {
+            return output;
+        }
+
+        public static Path getSearchReport() {
+            return searchReport;
+        }
+
+        public static Path getAlignmentReport() {
+            return alignmentReport;
+        }
     }
 }
