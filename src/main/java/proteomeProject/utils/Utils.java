@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static proteomeProject.spectrumAnnotation.IonType.Type.B;
+import static proteomeProject.spectrumAnnotation.IonType.Type.Y;
 import static proteomeProject.utils.Chemicals.H2O;
 
 /**
@@ -55,8 +56,7 @@ public class Utils {
     }
 
     public static double evalTotalMass(String peptide) {
-        return peptide.chars()
-                .mapToDouble(c -> Chemicals.AminoAcid.getMass((char) c))
-                .sum();
+        List<Double> pref = getPrefixes(peptide, Y);
+        return pref.get(pref.size() - 1);
     }
 }
