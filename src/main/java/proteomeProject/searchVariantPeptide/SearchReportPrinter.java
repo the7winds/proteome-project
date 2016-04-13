@@ -1,13 +1,11 @@
 package proteomeProject.searchVariantPeptide;
 
-import proteomeProject.utils.Printer;
-
 import java.io.PrintStream;
 
 /**
  * Created by the7winds on 03.04.16.
  */
-class SearchReportPrinter implements Printer {
+class SearchReportPrinter {
 
     private static final String TAG_FOUND = "tag found results:";
     private static final String COLUMNS1 = "filename\tscan\tpeptide\ttag\treverse\toffset\tprotein\tdelta(theor_offset-offset)\te-value";
@@ -18,20 +16,11 @@ class SearchReportPrinter implements Printer {
 
     private PrintStream printStream = System.out;
 
-    public SearchReportPrinter() {
-    }
-
     public SearchReportPrinter(PrintStream printStream) {
         this.printStream = printStream;
     }
 
-    public void setUpOutput(PrintStream printStream) {
-        this.printStream = printStream;
-    }
-
-    public void print(Object object) {
-        SearchVariantPeptideResults results = (SearchVariantPeptideResults) object;
-
+    void print(SearchVariantPeptideResults results) {
         printStream.println(TAG_FOUND);
         printStream.println(COLUMNS1);
         results.getTagFoundResults().forEach(result ->

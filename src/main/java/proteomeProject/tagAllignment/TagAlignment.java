@@ -46,16 +46,15 @@ public class TagAlignment {
                 .resolve(tag.getSuffixedSpecFile())
                 .toFile(), tag.getScanId());
 
-        String tagStr = tag.getTag();
         int first;
         double delta;
         int idx;
         if (type == IonType.Type.B) {
-            idx = first = var.getPeptide().indexOf(tagStr);
+            idx = first = var.getPeptide().indexOf(tag.getTag());
             delta = tag.getPeaks()[0] - prefixes[first];
         } else {
-            first = var.getPeptide().indexOf(StringUtils.reverse(tagStr));
-            idx = var.getPeptide().length() - (first + tagStr.length());
+            first = var.getPeptide().indexOf(StringUtils.reverse(tag.getTag()));
+            idx = var.getPeptide().length() - (first + tag.getTag().length());
             delta = tag.getPeaks()[0] - prefixes[idx];
         }
 
@@ -63,12 +62,10 @@ public class TagAlignment {
             prefixes[i] += delta;
         }
 
-        output.println("SPEC=" + tag.getSpecFile());
-        output.println("SCAN=" + tag.getScanId());
-        output.println("TAG=" + tagStr + " FIRST=" + idx + " LAST=" + (idx + tagStr.length()));
-        output.println("PEPTIDE: " + var.getPeptide());
+        output.printf("SPEC=%s\n", tag.getSpecFile());
+        output.printf("TAG=%s FIRST=%s%d LAST=%s%d\n", tag.getTag(), type.toString(), idx, type.toString(), (idx + tag.getTag().length()));
 
         SpectrumAnnotation.annotateIons(spec, prefixes, type);
-        new AnnotationPrinter(output).print(spec);
+        new AnnotationPrinter(output).print(spec, var.getPeptide());
     }
 }

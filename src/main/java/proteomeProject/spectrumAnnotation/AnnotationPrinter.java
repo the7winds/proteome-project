@@ -1,6 +1,6 @@
 package proteomeProject.spectrumAnnotation;
 
-import proteomeProject.utils.Printer;
+import proteomeProject.utils.Utils;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -9,30 +9,23 @@ import java.util.Map;
 /**
  * Created by the7winds on 03.04.16.
  */
-public class AnnotationPrinter implements Printer {
+public class AnnotationPrinter {
 
-    private static final String COLUMNS = "peak\tion type";
+    private static final String COLUMNS = "PEAK\tION TYPE";
 
     private PrintStream printStream = System.out;
-
-    public AnnotationPrinter() {
-    }
 
     public AnnotationPrinter(PrintStream printStream) {
         this.printStream = printStream;
     }
 
-    @Override
-    public void setUpOutput(PrintStream printStream) {
-        printStream = printStream;
-    }
-
-    @Override
-    public void print(Object object) {
-        Spectrum spectrum = (Spectrum) object;
-
-        String title = "scan = " + spectrum.getScans();
-        printStream.println(title);
+    public void print(Spectrum spectrum, String peptide) {
+        printStream.printf("SCANS=%d\n", spectrum.getScans());
+        printStream.printf("PEPTIDE=%s\n", peptide);
+        printStream.printf("PRECURSOR MASS=%f\n", spectrum.getPrecursorMass());
+        double theoreticalMass = Utils.evalTotalMass(peptide);
+        printStream.printf("THEORETICAL MASS=%f\n", theoreticalMass);
+        printStream.printf("PRECURSOR MASS-THEORETICAL MASS=%f\n", spectrum.getPrecursorMass() - theoreticalMass);
         printStream.println(COLUMNS);
 
         for (Map.Entry<Double, List<IonType>> entry : spectrum.getFullInfoPeaks().entrySet()) {
@@ -44,5 +37,6 @@ public class AnnotationPrinter implements Printer {
             }
             printStream.println(out);
         }
+        printStream.println();
     }
 }

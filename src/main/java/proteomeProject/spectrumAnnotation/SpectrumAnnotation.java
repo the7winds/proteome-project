@@ -3,7 +3,6 @@ package proteomeProject.spectrumAnnotation;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResult;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
 import proteomeProject.utils.Chemicals;
-import proteomeProject.utils.Printer;
 import proteomeProject.utils.ProjectPaths;
 import proteomeProject.utils.Utils;
 
@@ -21,14 +20,14 @@ import static proteomeProject.utils.Chemicals.NH3;
  */
 public class SpectrumAnnotation {
 
-    private static final String TAG_FOUND = "tag found:";
-    private static final String TAG_NOT_EXISTS = "tag not exists:";
+    private static final String TAG_FOUND = "TAG FOUND:";
+    private static final String TAG_NOT_EXISTS = "TAG NOT EXISTS";
 
     public static void main(SearchVariantPeptideResults variantPeptideResults,
                             PrintStream output) throws IOException {
 
         output.println(TAG_FOUND);
-        Printer printer = new AnnotationPrinter(output);
+        final AnnotationPrinter printer = new AnnotationPrinter(output);
 
         for (SearchVariantPeptideResult variantPeptideResult : variantPeptideResults.getTagFoundResults()) {
             // if (variantPeptideResult.getDelta() )
@@ -36,7 +35,7 @@ public class SpectrumAnnotation {
                     .resolve(variantPeptideResult.getFilename())
                     .toFile(), variantPeptideResult.getScanNum());
             annotate(spectrum, variantPeptideResult.getPeptide());
-            printer.print(spectrum);
+            printer.print(spectrum, variantPeptideResult.getPeptide());
         }
 
         output.println(TAG_NOT_EXISTS);
@@ -45,7 +44,7 @@ public class SpectrumAnnotation {
                     .resolve(variantPeptideResult.getFilename())
                     .toFile(), variantPeptideResult.getScanNum());
             annotate(spectrum, variantPeptideResult.getPeptide());
-            printer.print(spectrum);
+            printer.print(spectrum, variantPeptideResult.getPeptide());
         }
     }
 
@@ -54,7 +53,7 @@ public class SpectrumAnnotation {
         annotateIons(spectrum, peptide, Y);
     }
 
-    public static void annotateIons(Spectrum spectrum, String peptide, IonType.Type type) {
+    private static void annotateIons(Spectrum spectrum, String peptide, IonType.Type type) {
         List<Double> tmp = Utils.getPrefixes(peptide, type);
         Double[] prefixMass = Utils.getPrefixes(peptide, type).toArray(new Double[tmp.size()]);
         annotateIons(spectrum, prefixMass, type);

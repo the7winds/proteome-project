@@ -32,7 +32,7 @@ public class IonType {
 
     @Override
     public String toString() {
-        String ionStr = type.name() + ' ' + num;
+        String ionStr = type.name() + num;
         if (defect != null) {
             for (Chemicals chemical : defect) {
                 ionStr += " - " + chemical.name();
