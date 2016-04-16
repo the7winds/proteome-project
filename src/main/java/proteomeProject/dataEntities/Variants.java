@@ -1,8 +1,4 @@
-package proteomeProject;
-
-import proteomeProject.spectrumAnnotation.IonType;
-import proteomeProject.utils.Chemicals;
-import proteomeProject.utils.Utils;
+package proteomeProject.dataEntities;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -39,18 +35,18 @@ public class Variants {
 
     public static class Variant {
         private final String name;
-        private final String peptide;
+        private final Peptide peptide;
 
         public Variant(String name, String peptide) {
             this.name = name;
-            this.peptide = peptide;
+            this.peptide = new Peptide(peptide);
         }
 
         public String getName() {
             return name;
         }
 
-        public String getPeptide() {
+        public Peptide getPeptide() {
             return peptide;
         }
     }

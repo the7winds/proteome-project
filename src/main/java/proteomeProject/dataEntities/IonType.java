@@ -1,4 +1,4 @@
-package proteomeProject.spectrumAnnotation;
+package proteomeProject.dataEntities;
 
 import proteomeProject.utils.Chemicals;
 

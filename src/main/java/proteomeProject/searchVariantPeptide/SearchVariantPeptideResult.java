@@ -1,7 +1,8 @@
 package proteomeProject.searchVariantPeptide;
 
 import org.apache.commons.lang3.StringUtils;
-import proteomeProject.ContributionWrapper.Tag;
+import proteomeProject.dataEntities.IonType;
+import proteomeProject.dataEntities.Tag;
 import proteomeProject.utils.Chemicals;
 import proteomeProject.utils.Utils;
 
@@ -17,32 +18,32 @@ public class SearchVariantPeptideResult {
 
     private final DBResult dbResult;
     private final Tag tag;
-    private final boolean reverse;
+    private final IonType.Type type;
     private final double delta;
 
     public SearchVariantPeptideResult(DBResult dbResult,
                                       Tag tag,
-                                      boolean reverse) {
+                                      IonType.Type type) {
         this.dbResult = dbResult;
         this.tag = tag;
-        this.reverse = reverse;
+        this.type = type;
 
         String preTag;
 
-        if (!reverse) {
-            preTag = getPeptide().substring(0, getPeptide().indexOf(getTag()));
+        if (type != IonType.Type.Y) {
+            preTag = getPeptide().substring(0, getPeptide().indexOf(getTag().getTag()));
         } else {
-            String reverseTag = StringUtils.reverse(getTag());
+            String reverseTag = StringUtils.reverse(getTag().getTag());
             preTag = getPeptide().substring(getPeptide().lastIndexOf(reverseTag) + reverseTag.length());
         }
 
-        delta = getOffset() - (Utils.evalTotalMass(preTag) + (reverse ? Chemicals.H2O.getMass() : 0));
+        delta = getOffset() - (Utils.evalTotalMass(preTag) + (type == IonType.Type.Y ? Chemicals.H2O.getMass() : 0));
     }
 
     public SearchVariantPeptideResult(DBResult dbResult) {
         this.dbResult = dbResult;
         tag = null;
-        reverse = false;
+        type = IonType.Type.B;
         delta = 0;
     }
 
@@ -62,8 +63,8 @@ public class SearchVariantPeptideResult {
         return dbResult.getEValue();
     }
 
-    public String getTag() {
-        return tag.getTag();
+    public Tag getTag() {
+        return tag;
     }
 
     public double getOffset() {
@@ -74,8 +75,8 @@ public class SearchVariantPeptideResult {
         return delta;
     }
 
-    public boolean isReverse() {
-        return reverse;
+    public IonType.Type getType() {
+        return type;
     }
 
     public String getProtein() {

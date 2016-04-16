@@ -1,33 +1,41 @@
 import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import proteomeProject.ContributionWrapper;
-import proteomeProject.Variants;
+import proteomeProject.dataEntities.ContributionWrapper;
+import proteomeProject.dataEntities.Variants;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptide;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
-import proteomeProject.spectrumAnnotation.SpectrumAnnotation;
-import proteomeProject.tagAllignment.TagAlignment;
-import proteomeProject.utils.ParsedArgs;
+import proteomeProject.annotation.SpectrumAnnotation;
+import proteomeProject.alignment.TagAlignment;
+import proteomeProject.utils.Options;
 import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * Created by the7winds on 05.04.16.
  */
 public class Main {
 
-    public static void main(String[] args) throws CmdLineException, IOException {
+    public static void main(String[] args) throws CmdLineException, IOException, InterruptedException {
 
-        ParsedArgs.parse(args);
+        long start = System.currentTimeMillis();
 
-        ContributionWrapper.init(ProjectPaths.Sources.getContribution());
-        Variants.init(ProjectPaths.Sources.getVariants());
+        Options.parse(args);
 
-        SearchVariantPeptideResults results = SearchVariantPeptide.main(ProjectPaths.Sources.getTsv(),
-                ProjectPaths.Output.getSearchReport());
+        try (PrintStream searchReportPrintStream = new PrintStream(ProjectPaths.Output.getSearchReport().toFile())) {
+            ContributionWrapper.init(ProjectPaths.Sources.getContribution());
+            Variants.init(ProjectPaths.Sources.getVariants());
 
-        SpectrumAnnotation.main(results, ProjectPaths.Output.getSearchReport());
+            SearchVariantPeptideResults results = SearchVariantPeptide.main(ProjectPaths.Sources.getTsv(), searchReportPrintStream);
 
-        TagAlignment.main(ProjectPaths.Output.getAlignmentReport());
+            SpectrumAnnotation.main(results, searchReportPrintStream);
+        }
+
+
+        try (PrintStream alignmentReportPrintStream = new PrintStream(ProjectPaths.Output.getAlignmentReport().toFile())) {
+            TagAlignment.main(alignmentReportPrintStream);
+        }
+
+        System.out.printf("time: %d", System.currentTimeMillis() - start);
     }
 }

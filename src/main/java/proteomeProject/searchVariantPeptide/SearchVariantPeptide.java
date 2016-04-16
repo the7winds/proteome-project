@@ -4,7 +4,9 @@ import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 import org.apache.commons.lang3.StringUtils;
-import proteomeProject.ContributionWrapper;
+import proteomeProject.dataEntities.ContributionWrapper;
+import proteomeProject.dataEntities.IonType;
+import proteomeProject.dataEntities.Tag;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -32,9 +34,9 @@ public class SearchVariantPeptide {
         this.tsvPath = tsvPath;
     }
 
-    public static SearchVariantPeptideResults main(Path tsvPath, Path output) throws FileNotFoundException {
+    public static SearchVariantPeptideResults main(Path tsvPath, PrintStream output) throws FileNotFoundException {
         SearchVariantPeptideResults results = new SearchVariantPeptide(tsvPath).search();
-        new SearchReportPrinter(output).print(results);
+        SearchReportPrinter.print(output, results);
         return results;
     }
 
@@ -46,20 +48,20 @@ public class SearchVariantPeptide {
         final Collection<SearchVariantPeptideResult> tagNotExistsResults = new LinkedList<>();
 
         for (DBResult dbResult : variantPeptidesDBResults) {
-            ContributionWrapper.Tag tag = ContributionWrapper.getInstance().findByFileAndSpec(dbResult);
+            Tag tag = ContributionWrapper.getInstance().findByFileAndSpec(dbResult);
             if (tag != null) {
                 boolean foundResults = false;
 
                 if (dbResult.getPeptide().contains(tag.getTag())) {
                     foundResults = true;
-                    tagFoundResults.add(new SearchVariantPeptideResult(dbResult, tag, false));
+                    tagFoundResults.add(new SearchVariantPeptideResult(dbResult, tag, IonType.Type.B));
                 }
 
                 String reverseTag = StringUtils.reverse(tag.getTag());
 
                 if (dbResult.getPeptide().contains(reverseTag)) {
                     foundResults = true;
-                    tagFoundResults.add(new SearchVariantPeptideResult(dbResult, tag, true));
+                    tagFoundResults.add(new SearchVariantPeptideResult(dbResult, tag, IonType.Type.Y));
                 }
 
                 if (!foundResults) {

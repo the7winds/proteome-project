@@ -3,7 +3,7 @@ package proteomeProject.utils;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static proteomeProject.utils.ParsedArgs.*;
+import static proteomeProject.utils.Options.*;
 
 /**
  * Created by the7winds on 28.03.16.
@@ -34,9 +34,9 @@ public class ProjectPaths {
         }
 
         private static void resolveSourcesPaths() {
-            tsv = sources.resolve(ParsedArgs.tsv);
-            contribution = sources.resolve(ParsedArgs.contribution);
-            variants = sources.resolve(ParsedArgs.variants);
+            tsv = sources.resolve(Options.tsv);
+            contribution = sources.resolve(Options.contribution);
+            variants = sources.resolve(Options.variants);
         }
 
         public static Path getSources() {
@@ -69,8 +69,8 @@ public class ProjectPaths {
         }
 
         private static void resolveOutputPaths() throws IOException {
-            searchReport = output.resolve(SEARCH_REPORT);
-            alignmentReport = output.resolve(ALIGNMENT_REPORT);
+            searchReport = output.resolve(Options.searchReport);
+            alignmentReport = output.resolve(Options.alignmentReport);
 
             output.toFile().mkdir();
             searchReport.toFile().createNewFile();
