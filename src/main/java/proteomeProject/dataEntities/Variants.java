@@ -11,18 +11,16 @@ import java.util.List;
 public class Variants {
 
     private static Variants INSTANCE;
-    private List<Variant> variants = new LinkedList<>();
-
+    private List<Peptide> variants = new LinkedList<>();
 
     public Variants(Path variantPath) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(variantPath.toFile()));
         while (br.ready()) {
             String name = br.readLine().substring(1);
             String peptide = br.readLine();
-            variants.add(new Variant(name, peptide));
+            variants.add(new Peptide(name, peptide));
         }
     }
-
 
     public static void init(Path variantPath) throws IOException {
         if (INSTANCE == null) {
@@ -32,31 +30,11 @@ public class Variants {
         }
     }
 
-
-    public static class Variant {
-        private final String name;
-        private final Peptide peptide;
-
-        public Variant(String name, String peptide) {
-            this.name = name;
-            this.peptide = new Peptide(peptide);
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Peptide getPeptide() {
-            return peptide;
-        }
-    }
-
-
     public static Variants getInstance() {
         return INSTANCE;
     }
 
-    public List<Variant> getVariants() {
+    public List<Peptide> getVariants() {
         return variants;
     }
 }

@@ -28,7 +28,7 @@ public class SpectrumAnnotation {
                     .resolve(variantPeptideResult.getFilename())
                     .toFile(), variantPeptideResult.getScanNum());
             Annotation annotation = Annotation.annotate(spectrum,
-                    new Peptide(variantPeptideResult.getPeptide()), variantPeptideResult.getTag());
+                    new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide()), variantPeptideResult.getTag());
             AnnotationPrinter.print(output, annotation);
         }
 
@@ -37,8 +37,9 @@ public class SpectrumAnnotation {
             Spectrum spectrum = Spectrum.parse(ProjectPaths.Sources.getSources()
                     .resolve(variantPeptideResult.getFilename())
                     .toFile(), variantPeptideResult.getScanNum());
-            Annotation annotation = Annotation.annotate(spectrum,
-                    new Peptide(variantPeptideResult.getPeptide()), variantPeptideResult.getTag());
+            Annotation annotation = Annotation.annotate(spectrum
+                    , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
+                    , variantPeptideResult.getTag());
             AnnotationPrinter.print(output, annotation);
         }
 
@@ -47,8 +48,9 @@ public class SpectrumAnnotation {
             Spectrum spectrum = Spectrum.parse(ProjectPaths.Sources.getSources()
                     .resolve(variantPeptideResult.getFilename())
                     .toFile(), variantPeptideResult.getScanNum());
-            Annotation annotation = Annotation.annotate(spectrum,
-                    new Peptide(variantPeptideResult.getPeptide()), variantPeptideResult.getTag());
+            Annotation annotation = Annotation.annotate(spectrum
+                    , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
+                    , variantPeptideResult.getTag());
             AnnotationPrinter.print(output, annotation);
         }
     }

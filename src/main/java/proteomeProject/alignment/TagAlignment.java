@@ -1,9 +1,9 @@
 package proteomeProject.alignment;
 
 import org.apache.commons.lang3.StringUtils;
+import proteomeProject.annotation.Annotation;
+import proteomeProject.annotation.AnnotationPrinter;
 import proteomeProject.dataEntities.*;
-import proteomeProject.dataEntities.Variants;
-import proteomeProject.annotation.*;
 import proteomeProject.utils.Options;
 import proteomeProject.utils.ProjectPaths;
 
@@ -30,20 +30,20 @@ public final class TagAlignment {
         List<Annotation> annotations = Collections.synchronizedList(new LinkedList<>());
 
         for (Tag tag : ContributionWrapper.getInstance().getAllTags()) {
-            for (Variants.Variant var : Variants.getInstance().getVariants()) {
+            for (Peptide variant : Variants.getInstance().getVariants()) {
                 executorService.execute(() -> {
                     try {
                         int idx;
-                        if ((idx = var.getPeptide().getPeptide().indexOf(tag.getTag())) != -1) {
-                            Peptide peptide = new Peptide(var.getPeptide());
+                        if ((idx = variant.getPeptide().indexOf(tag.getTag())) != -1) {
+                            Peptide peptide = new Peptide(variant);
                             align(peptide, tag, B, output);
                             Spectrum spec = Spectrum.parse(ProjectPaths.Sources.getSources()
                                     .resolve(tag.getSuffixedSpecFile())
                                     .toFile(), tag.getScanId());
                             annotations.add(Annotation.annotate(spec, peptide, tag, B, idx, idx + tag.getTag().length()));
                         }
-                        if ((idx = var.getPeptide().getPeptide().indexOf(StringUtils.reverse(tag.getTag()))) != -1) {
-                            Peptide peptide = new Peptide(var.getPeptide());
+                        if ((idx = variant.getPeptide().indexOf(StringUtils.reverse(tag.getTag()))) != -1) {
+                            Peptide peptide = new Peptide(variant);
                             align(peptide, tag, Y, output);
                             Spectrum spec = Spectrum.parse(ProjectPaths.Sources.getSources()
                                     .resolve(tag.getSuffixedSpecFile())

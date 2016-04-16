@@ -16,6 +16,7 @@ public final class AnnotationPrinter {
     public static void print(PrintStream printStream, Annotation annotation) {
         printStream.printf("SCANS=%d\n", annotation.getSpectrum().getScans());
         printStream.printf("PEPTIDE=%s\n", annotation.getPeptide().getPeptide());
+        printStream.printf("NAME=%s\n", annotation.getPeptide().getName());
         printStream.printf("PRECURSOR MASS=%f\n", annotation.getSpectrum().getPrecursorMass());
         printStream.printf("THEORETICAL MASS=%f\n", annotation.getPeptide().getTheoreticMass());
         printStream.printf("PRECURSOR MASS-THEORETICAL MASS=%f\n", annotation.getSpectrum().getPrecursorMass() - annotation.getPeptide().getTheoreticMass());

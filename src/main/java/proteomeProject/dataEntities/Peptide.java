@@ -9,12 +9,14 @@ import java.util.Arrays;
  */
 public class Peptide {
 
+    private final String name;
     private final String peptide;
     private final double theoreticMass;
     private final double[] bSpectrum;
     private final double[] ySpectrum;
 
-    public Peptide(String peptide) {
+    public Peptide(String name, String peptide) {
+        this.name = name;
         this.peptide = Utils.getRealPeptideString(peptide);
         bSpectrum = Utils.getTheoreticSpectrum(peptide, IonType.Type.B);
         ySpectrum = Utils.getTheoreticSpectrum(peptide, IonType.Type.Y);
@@ -22,10 +24,11 @@ public class Peptide {
     }
 
     public Peptide(Peptide peptide) {
-        this.peptide = peptide.getPeptide();
-        theoreticMass = peptide.getTheoreticMass();
-        bSpectrum = Arrays.copyOf(peptide.getbSpectrum(), peptide.getbSpectrum().length);
-        ySpectrum = Arrays.copyOf(peptide.getySpectrum(), peptide.getySpectrum().length);
+        this.name = peptide.name;
+        this.peptide = peptide.peptide;
+        theoreticMass = peptide.theoreticMass;
+        bSpectrum = Arrays.copyOf(peptide.bSpectrum, peptide.bSpectrum.length);
+        ySpectrum = Arrays.copyOf(peptide.ySpectrum, peptide.ySpectrum.length);
     }
 
     public String getPeptide() {
@@ -42,5 +45,9 @@ public class Peptide {
 
     public double getTheoreticMass() {
         return theoreticMass;
+    }
+
+    public String getName() {
+        return name;
     }
 }
