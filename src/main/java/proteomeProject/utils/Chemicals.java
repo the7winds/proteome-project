@@ -50,9 +50,12 @@ public enum Chemicals {
         }
 
         public static double getMass(char c) {
-            return valueOf(Character.toString(c)).getAverageMass();
+            return valueOf(c).getAverageMass();
         }
 
+        public static AminoAcid valueOf(char c) {
+            return valueOf(Character.toString(c));
+        }
     }
 
     private final double mass;

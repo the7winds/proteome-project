@@ -1,9 +1,11 @@
 package proteomeProject.alignment;
 
+import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.lang3.StringUtils;
 import proteomeProject.annotation.Annotation;
 import proteomeProject.annotation.AnnotationPrinter;
 import proteomeProject.dataEntities.*;
+import proteomeProject.report.html.HtmlReport;
 import proteomeProject.utils.Options;
 import proteomeProject.utils.ProjectPaths;
 
@@ -25,7 +27,7 @@ import static proteomeProject.dataEntities.IonType.Type.Y;
 
 public final class TagAlignment {
 
-    static public void main(PrintStream output) throws InterruptedException, IOException {
+    static public void main(PrintStream output) throws InterruptedException, IOException, TranscoderException {
         ExecutorService executorService = Executors.newFixedThreadPool(Options.getThreadsNum());
         List<Annotation> annotations = Collections.synchronizedList(new LinkedList<>());
 
@@ -40,7 +42,12 @@ public final class TagAlignment {
                             Spectrum spec = Spectrum.parse(ProjectPaths.Sources.getSources()
                                     .resolve(tag.getSuffixedSpecFile())
                                     .toFile(), tag.getScanId());
-                            annotations.add(Annotation.annotate(spec, peptide, tag, B, idx, idx + tag.getTag().length()));
+                            annotations.add(Annotation.annotate(spec
+                                    , peptide
+                                    , tag
+                                    , B
+                                    , idx
+                                    , idx + tag.getTag().length()));
                         }
                         if ((idx = variant.getPeptide().indexOf(StringUtils.reverse(tag.getTag()))) != -1) {
                             Peptide peptide = new Peptide(variant);
@@ -48,7 +55,12 @@ public final class TagAlignment {
                             Spectrum spec = Spectrum.parse(ProjectPaths.Sources.getSources()
                                     .resolve(tag.getSuffixedSpecFile())
                                     .toFile(), tag.getScanId());
-                            annotations.add(Annotation.annotate(spec, peptide, tag, Y, idx, idx + tag.getTag().length()));
+                            annotations.add(Annotation.annotate(spec
+                                    , peptide
+                                    , tag
+                                    , Y
+                                    , peptide.getPeptide().length() - idx - tag.getTag().length()
+                                    , peptide.getPeptide().length() - idx));
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -62,6 +74,8 @@ public final class TagAlignment {
         for (Annotation annotation : annotations) {
             AnnotationPrinter.print(output, annotation);
         }
+
+        HtmlReport.makeHtmlReport("alignment.html", annotations);
     }
 
     // не рассматривается ситуация, когда несколько вхождений

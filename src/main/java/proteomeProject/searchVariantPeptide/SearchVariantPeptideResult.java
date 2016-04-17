@@ -19,6 +19,8 @@ public class SearchVariantPeptideResult {
     private final DBResult dbResult;
     private final Tag tag;
     private final IonType.Type type;
+    private final int first;
+    private final int last;
     private final double delta;
 
     public SearchVariantPeptideResult(DBResult dbResult,
@@ -30,10 +32,14 @@ public class SearchVariantPeptideResult {
 
         String preTag;
 
-        if (type != IonType.Type.Y) {
-            preTag = getPeptide().substring(0, getPeptide().indexOf(getTag().getTag()));
+        if (type == IonType.Type.B) {
+            first = getPeptide().indexOf(tag.getTag());
+            last = first + tag.getTag().length();
+            preTag = getPeptide().substring(0, getPeptide().indexOf(tag.getTag()));
         } else {
-            String reverseTag = StringUtils.reverse(getTag().getTag());
+            String reverseTag = StringUtils.reverse(tag.getTag());
+            last = getPeptide().length() - getPeptide().indexOf(reverseTag);
+            first = last - tag.getTag().length();
             preTag = getPeptide().substring(getPeptide().lastIndexOf(reverseTag) + reverseTag.length());
         }
 
@@ -45,6 +51,8 @@ public class SearchVariantPeptideResult {
         tag = null;
         type = IonType.Type.B;
         delta = 0;
+        first = 0;
+        last = 0;
     }
 
     public String getFilename() {
@@ -81,5 +89,13 @@ public class SearchVariantPeptideResult {
 
     public String getProtein() {
         return dbResult.getProtein();
+    }
+
+    public int getFirst() {
+        return first;
+    }
+
+    public int getLast() {
+        return last;
     }
 }
