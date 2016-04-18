@@ -13,7 +13,7 @@ public class Variants {
     private static Variants INSTANCE;
     private List<Peptide> variants = new LinkedList<>();
 
-    public Variants(Path variantPath) throws IOException {
+    private Variants(Path variantPath) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(variantPath.toFile()));
         while (br.ready()) {
             String name = br.readLine().substring(1);
