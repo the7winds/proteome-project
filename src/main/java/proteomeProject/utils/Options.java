@@ -3,6 +3,7 @@ package proteomeProject.utils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -42,10 +43,13 @@ public final class Options {
     static Path contribution;
 
     /**
-     * variants peptide file
+     * peptides file
      */
-    @Option(name = "--var")
-    static Path variants;
+    @Option(name = "--var-std")
+    static Path variantStandard;
+
+    @Option(name = "--specs", handler = StringArrayOptionHandler.class)
+    static String[] specs;
 
     /**
      * output directory

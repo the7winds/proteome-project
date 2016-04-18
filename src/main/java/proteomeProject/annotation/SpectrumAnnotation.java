@@ -3,6 +3,7 @@ package proteomeProject.annotation;
 import org.apache.batik.transcoder.TranscoderException;
 import proteomeProject.dataEntities.Peptide;
 import proteomeProject.dataEntities.Spectrum;
+import proteomeProject.dataEntities.SpectrumWrapper;
 import proteomeProject.report.html.HtmlReport;
 import proteomeProject.report.svg.AnnotationSVG;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResult;
@@ -30,9 +31,10 @@ public class SpectrumAnnotation {
         List<Annotation> annotations = new LinkedList<>();
         for (SearchVariantPeptideResult variantPeptideResult : variantPeptideResults.getTagFoundResults()) {
             // if (variantPeptideResult.getDelta() )
-            Spectrum spectrum = Spectrum.parse(ProjectPaths.Sources.getSources()
-                    .resolve(variantPeptideResult.getFilename())
-                    .toFile(), variantPeptideResult.getScanNum());
+            Spectrum spectrum = SpectrumWrapper.getInstance()
+                    .findSpectrumByScans(ProjectPaths.Sources.getSources()
+                            .resolve(variantPeptideResult.getFilename())
+                            .toFile(), variantPeptideResult.getScanNum());
             Annotation annotation = Annotation.annotate(spectrum
                     , new Peptide(variantPeptideResult.getProtein()
                             , variantPeptideResult.getPeptide())
@@ -49,9 +51,10 @@ public class SpectrumAnnotation {
 
         output.println(TAG_NOT_FOUND);
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotFoundResults()) {
-            Spectrum spectrum = Spectrum.parse(ProjectPaths.Sources.getSources()
-                    .resolve(variantPeptideResult.getFilename())
-                    .toFile(), variantPeptideResult.getScanNum());
+            Spectrum spectrum = SpectrumWrapper.getInstance()
+                    .findSpectrumByScans(ProjectPaths.Sources.getSources()
+                            .resolve(variantPeptideResult.getFilename())
+                            .toFile(), variantPeptideResult.getScanNum());
             Annotation annotation = Annotation.annotate(spectrum
                     , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
                     , variantPeptideResult.getTag());
@@ -64,9 +67,10 @@ public class SpectrumAnnotation {
 
         output.println(TAG_NOT_EXISTS);
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotExistsResults()) {
-            Spectrum spectrum = Spectrum.parse(ProjectPaths.Sources.getSources()
-                    .resolve(variantPeptideResult.getFilename())
-                    .toFile(), variantPeptideResult.getScanNum());
+            Spectrum spectrum = SpectrumWrapper.getInstance()
+                    .findSpectrumByScans(ProjectPaths.Sources.getSources()
+                            .resolve(variantPeptideResult.getFilename())
+                            .toFile(), variantPeptideResult.getScanNum());
             Annotation annotation = Annotation.annotate(spectrum
                     , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
                     , variantPeptideResult.getTag());

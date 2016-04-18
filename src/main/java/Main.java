@@ -3,7 +3,8 @@ import org.kohsuke.args4j.CmdLineException;
 import proteomeProject.alignment.TagAlignment;
 import proteomeProject.annotation.SpectrumAnnotation;
 import proteomeProject.dataEntities.ContributionWrapper;
-import proteomeProject.dataEntities.Variants;
+import proteomeProject.dataEntities.SpectrumWrapper;
+import proteomeProject.dataEntities.VariantsStandards;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptide;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
 import proteomeProject.utils.Options;
@@ -32,7 +33,8 @@ public class Main {
 
         try (PrintStream searchReportPrintStream = new PrintStream(ProjectPaths.Output.getSearchReport().toFile())) {
             ContributionWrapper.init(ProjectPaths.Sources.getContribution());
-            Variants.init(ProjectPaths.Sources.getVariants());
+            VariantsStandards.init(ProjectPaths.Sources.getVariantStandard());
+            SpectrumWrapper.init(ProjectPaths.Sources.getSpectrums());
 
             SearchVariantPeptideResults results = SearchVariantPeptide.main(ProjectPaths.Sources.getTsv(), searchReportPrintStream);
 
@@ -47,6 +49,7 @@ public class Main {
 
         Files.copy(Paths.get("src/main/resources/report/summary.html")
                 , ProjectPaths.Output.getOutput().resolve("report").resolve("summary.html"), REPLACE_EXISTING);
+
 
         System.out.printf("time: %d", System.currentTimeMillis() - start);
     }

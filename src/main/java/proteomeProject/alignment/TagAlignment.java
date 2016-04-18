@@ -32,16 +32,17 @@ public final class TagAlignment {
         List<Annotation> annotations = Collections.synchronizedList(new LinkedList<>());
 
         for (Tag tag : ContributionWrapper.getInstance().getAllTags()) {
-            for (Peptide variant : Variants.getInstance().getVariants()) {
+            for (Peptide variant : VariantsStandards.getInstance().getVariants()) {
                 executorService.execute(() -> {
                     try {
                         int idx;
                         if ((idx = variant.getPeptide().indexOf(tag.getTag())) != -1) {
                             Peptide peptide = new Peptide(variant);
                             align(peptide, tag, B, output);
-                            Spectrum spec = Spectrum.parse(ProjectPaths.Sources.getSources()
-                                    .resolve(tag.getSuffixedSpecFile())
-                                    .toFile(), tag.getScanId());
+                            Spectrum spec = SpectrumWrapper.getInstance()
+                                    .findSpectrumByScans(ProjectPaths.Sources.getSources()
+                                            .resolve(tag.getSuffixedSpecFile())
+                                            .toFile(), tag.getScanId());
                             annotations.add(Annotation.annotate(spec
                                     , peptide
                                     , tag
@@ -52,9 +53,10 @@ public final class TagAlignment {
                         if ((idx = variant.getPeptide().indexOf(StringUtils.reverse(tag.getTag()))) != -1) {
                             Peptide peptide = new Peptide(variant);
                             align(peptide, tag, Y, output);
-                            Spectrum spec = Spectrum.parse(ProjectPaths.Sources.getSources()
-                                    .resolve(tag.getSuffixedSpecFile())
-                                    .toFile(), tag.getScanId());
+                            Spectrum spec = SpectrumWrapper.getInstance()
+                                    .findSpectrumByScans(ProjectPaths.Sources.getSources()
+                                            .resolve(tag.getSuffixedSpecFile())
+                                            .toFile(), tag.getScanId());
                             annotations.add(Annotation.annotate(spec
                                     , peptide
                                     , tag

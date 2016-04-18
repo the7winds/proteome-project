@@ -2,6 +2,8 @@ package proteomeProject.utils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import static proteomeProject.utils.Options.*;
 
@@ -28,7 +30,8 @@ public class ProjectPaths {
 
         private static Path tsv;
         private static Path contribution;
-        private static Path variants;
+        private static Path variantStandard;
+        private static Collection<Path> spectrums = new LinkedList<>();
 
         private Sources() {
         }
@@ -36,7 +39,10 @@ public class ProjectPaths {
         private static void resolveSourcesPaths() {
             tsv = sources.resolve(Options.tsv);
             contribution = sources.resolve(Options.contribution);
-            variants = sources.resolve(Options.variants);
+            variantStandard = sources.resolve(Options.variantStandard);
+            for (String path : Options.specs) {
+                spectrums.add(sources.resolve(path));
+            }
         }
 
         public static Path getSources() {
@@ -51,8 +57,12 @@ public class ProjectPaths {
             return contribution;
         }
 
-        public static Path getVariants() {
-            return variants;
+        public static Path getVariantStandard() {
+            return variantStandard;
+        }
+
+        public static Collection<Path> getSpectrums() {
+            return spectrums;
         }
     }
 
