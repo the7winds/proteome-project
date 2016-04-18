@@ -36,8 +36,8 @@ public class AnnotationSVG {
         Element svgRoot = document.getDocumentElement();
 
         svgRoot.setAttribute("width"
-                , String.valueOf(0.6 * Math.max(annotation.getSpectrum().getPrecursorMass()
-                , AminoSVG.width * annotation.getPeptide().getPeptide().length())));
+                , String.valueOf(1.2 * Math.max(annotation.getSpectrum().getPrecursorMass()
+                , 0.5 * AminoSVG.width * annotation.getPeptide().getPeptide().length())));
         svgRoot.setAttribute("height", "400");
 
         Element info = InfoSVG.getElement(document, annotation);
