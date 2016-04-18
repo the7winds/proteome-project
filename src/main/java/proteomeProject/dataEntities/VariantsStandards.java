@@ -1,6 +1,8 @@
 package proteomeProject.dataEntities;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 public class VariantsStandards {
 
     private static VariantsStandards INSTANCE;
-    private Map<Peptide, Peptide> varToStd = new HashMap<>();
+    private final Map<Peptide, Peptide> varToStd = new HashMap<>();
 
     private VariantsStandards(Path variantPath) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(variantPath.toFile()));

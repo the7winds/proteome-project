@@ -5,7 +5,8 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static proteomeProject.utils.Options.*;
+import static proteomeProject.utils.Options.output;
+import static proteomeProject.utils.Options.sources;
 
 /**
  * Created by the7winds on 28.03.16.

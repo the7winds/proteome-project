@@ -4,7 +4,6 @@ import javafx.util.Pair;
 import org.apache.commons.lang3.ArrayUtils;
 import proteomeProject.dataEntities.IonType;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;

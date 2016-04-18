@@ -5,7 +5,6 @@ import proteomeProject.dataEntities.Peptide;
 import proteomeProject.dataEntities.Spectrum;
 import proteomeProject.dataEntities.SpectrumWrapper;
 import proteomeProject.report.html.HtmlReport;
-import proteomeProject.report.svg.AnnotationSVG;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResult;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
 import proteomeProject.utils.ProjectPaths;
