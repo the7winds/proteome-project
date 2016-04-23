@@ -11,7 +11,6 @@ import proteomeProject.utils.Options;
 import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -31,25 +30,20 @@ public class Main {
 
         Options.parse(args);
 
-        try (PrintStream searchReportPrintStream = new PrintStream(ProjectPaths.Output.getSearchReport().toFile())) {
-            ContributionWrapper.init(ProjectPaths.Sources.getContribution());
-            VariantsStandards.init(ProjectPaths.Sources.getVariantStandard());
-            SpectrumWrapper.init(ProjectPaths.Sources.getSpectrums());
 
-            SearchVariantPeptideResults results = SearchVariantPeptide.main(ProjectPaths.Sources.getTsv(), searchReportPrintStream);
+        ContributionWrapper.init(ProjectPaths.Sources.getContribution());
+        VariantsStandards.init(ProjectPaths.Sources.getVariantStandard());
+        SpectrumWrapper.init(ProjectPaths.Sources.getSpectrums());
 
-            SpectrumAnnotation.main(results, searchReportPrintStream);
-        }
+        SearchVariantPeptideResults results = SearchVariantPeptide.main(ProjectPaths.Sources.getTsv());
 
+        SpectrumAnnotation.main(results);
 
-        try (PrintStream alignmentReportPrintStream = new PrintStream(ProjectPaths.Output.getAlignmentReport().toFile())) {
-            TagAlignment.main(alignmentReportPrintStream);
-        }
+        TagAlignment.main();
 
 
         Files.copy(Paths.get("src/main/resources/report/summary.html")
-                , ProjectPaths.Output.getOutput().resolve("report").resolve("summary.html"), REPLACE_EXISTING);
-
+                , ProjectPaths.getOutput().resolve("report").resolve("summary.html"), REPLACE_EXISTING);
 
         System.out.printf("time: %d", System.currentTimeMillis() - start);
     }

@@ -20,7 +20,7 @@ public class ProjectPaths {
 
     static void resolveProjectPaths() throws IOException {
         Sources.resolveSourcesPaths();
-        Output.resolveOutputPaths();
+        output.toFile().mkdirs();
     }
 
     /**
@@ -71,33 +71,7 @@ public class ProjectPaths {
      * contains paths to the program's output
      */
 
-    public static final class Output {
-
-        private static Path searchReport;
-        private static Path alignmentReport;
-
-        private Output() {
-        }
-
-        private static void resolveOutputPaths() throws IOException {
-            searchReport = output.resolve(Options.searchReport);
-            alignmentReport = output.resolve(Options.alignmentReport);
-
-            output.toFile().mkdir();
-            searchReport.toFile().createNewFile();
-            alignmentReport.toFile().createNewFile();
-        }
-
-        public static Path getOutput() {
-            return output;
-        }
-
-        public static Path getSearchReport() {
-            return searchReport;
-        }
-
-        public static Path getAlignmentReport() {
-            return alignmentReport;
-        }
+    public static Path getOutput() {
+        return output;
     }
 }

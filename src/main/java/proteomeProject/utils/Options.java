@@ -57,14 +57,8 @@ public final class Options {
     @Option(name = "--output")
     static Path output;
 
-    @Option(name = "--outputSearchReport")
-    static String searchReport = "searchReport";
-
-    @Option(name = "--alignmentReport")
-    static String alignmentReport = "alignmentReport";
-
     @Option(name = "--threads-num")
-    static int threadsNum;
+    static int threadsNum = 1;
 
     public static int getThreadsNum() {
         return threadsNum;

@@ -7,9 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import proteomeProject.dataEntities.ContributionWrapper;
 import proteomeProject.dataEntities.IonType;
 import proteomeProject.dataEntities.Tag;
+import proteomeProject.report.txt.SearchPrinter;
 
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,9 +34,9 @@ public class SearchVariantPeptide {
         this.tsvPath = tsvPath;
     }
 
-    public static SearchVariantPeptideResults main(Path tsvPath, PrintStream output) throws FileNotFoundException {
+    public static SearchVariantPeptideResults main(Path tsvPath) throws FileNotFoundException {
         SearchVariantPeptideResults results = new SearchVariantPeptide(tsvPath).search();
-        SearchReportPrinter.print(output, results);
+        SearchPrinter.getInstance().print(results);
         return results;
     }
 

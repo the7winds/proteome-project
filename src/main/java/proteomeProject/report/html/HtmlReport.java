@@ -27,9 +27,7 @@ public class HtmlReport {
     private static final String SVG = "svg";
 
     public static void makeHtmlReport(String name, Collection<Annotation> annotations) throws IOException, TranscoderException {
-        Path reportDir = ProjectPaths.Output
-                .getOutput()
-                .resolve(DIR);
+        Path reportDir = ProjectPaths.getOutput().resolve(DIR);
         Path report = reportDir.resolve(name);
         Path svgDir = reportDir.resolve(SVG);
 

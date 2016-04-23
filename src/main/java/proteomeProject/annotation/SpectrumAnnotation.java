@@ -5,12 +5,12 @@ import proteomeProject.dataEntities.Peptide;
 import proteomeProject.dataEntities.Spectrum;
 import proteomeProject.dataEntities.SpectrumWrapper;
 import proteomeProject.report.html.HtmlReport;
+import proteomeProject.report.txt.SearchPrinter;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResult;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
 import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,14 +19,9 @@ import java.util.List;
  */
 public class SpectrumAnnotation {
 
-    private static final String TAG_FOUND = "TAG FOUND";
-    private static final String TAG_NOT_FOUND = "TAG NOT FOUND";
-    private static final String TAG_NOT_EXISTS = "TAG NOT EXISTS";
+    public static void main(SearchVariantPeptideResults variantPeptideResults)
+            throws IOException, InterruptedException, TranscoderException {
 
-    public static void main(SearchVariantPeptideResults variantPeptideResults,
-                            PrintStream output) throws IOException, InterruptedException, TranscoderException {
-
-        output.println(TAG_FOUND);
         List<Annotation> annotations = new LinkedList<>();
         for (SearchVariantPeptideResult variantPeptideResult : variantPeptideResults.getTagFoundResults()) {
             // if (variantPeptideResult.getDelta() )
@@ -42,13 +37,12 @@ public class SpectrumAnnotation {
                     , variantPeptideResult.getFirst()
                     , variantPeptideResult.getLast());
             annotations.add(annotation);
-            AnnotationPrinter.print(output, annotation);
+            SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_FOUND, annotation);
         }
 
         HtmlReport.makeHtmlReport("searchFound.html", annotations);
         annotations.clear();
 
-        output.println(TAG_NOT_FOUND);
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotFoundResults()) {
             Spectrum spectrum = SpectrumWrapper.getInstance()
                     .findSpectrumByScans(ProjectPaths.Sources.getSources()
@@ -58,13 +52,12 @@ public class SpectrumAnnotation {
                     , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
                     , variantPeptideResult.getTag());
             annotations.add(annotation);
-            AnnotationPrinter.print(output, annotation);
+            SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_NOT_FOUND, annotation);
         }
 
         HtmlReport.makeHtmlReport("searchNotFound.html", annotations);
         annotations.clear();
 
-        output.println(TAG_NOT_EXISTS);
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotExistsResults()) {
             Spectrum spectrum = SpectrumWrapper.getInstance()
                     .findSpectrumByScans(ProjectPaths.Sources.getSources()
@@ -74,7 +67,7 @@ public class SpectrumAnnotation {
                     , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
                     , variantPeptideResult.getTag());
             annotations.add(annotation);
-            AnnotationPrinter.print(output, annotation);
+            SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_NOT_EXISTS, annotation);
         }
 
         HtmlReport.makeHtmlReport("searchNotExist.html", annotations);

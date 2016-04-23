@@ -1,5 +1,6 @@
-package proteomeProject.annotation;
+package proteomeProject.report.txt;
 
+import proteomeProject.annotation.Annotation;
 import proteomeProject.dataEntities.IonType;
 
 import java.io.PrintStream;
@@ -9,11 +10,11 @@ import java.util.Map;
 /**
  * Created by the7winds on 03.04.16.
  */
-public final class AnnotationPrinter {
+final class AnnotationPrinter {
 
     private static final String COLUMNS = "PEAK\tION TYPE";
 
-    public static void print(PrintStream printStream, Annotation annotation) {
+    static void print(PrintStream printStream, Annotation annotation) {
         printStream.printf("SCANS=%d\n", annotation.getSpectrum().getScans());
         printStream.printf("PEPTIDE=%s\n", annotation.getPeptide().getPeptide());
         printStream.printf("NAME=%s\n", annotation.getPeptide().getName());
@@ -41,6 +42,5 @@ public final class AnnotationPrinter {
             }
             printStream.println(out);
         }
-        printStream.println();
     }
 }
