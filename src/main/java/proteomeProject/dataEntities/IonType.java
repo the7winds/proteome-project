@@ -40,4 +40,8 @@ public class IonType {
         }
         return ionStr;
     }
+
+    public int getNum() {
+        return num;
+    }
 }
