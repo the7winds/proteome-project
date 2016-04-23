@@ -25,7 +25,8 @@ public class AlignmentSVG {
         if (annotation.getTag() != null) {
             Element arrow = getArrow(document, annotation);
             Element tag = AminoStringSVG.getElement(document,
-                    annotation.getType() == B ? annotation.getTag().getTag()
+                    annotation.getType() == B
+                            ? annotation.getTag().getTag()
                             : StringUtils.reverse(annotation.getTag().getTag()));
 
             if (annotation.getType() == B) {
