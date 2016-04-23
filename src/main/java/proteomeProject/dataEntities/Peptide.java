@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Created by the7winds on 14.04.16.
  */
-public class Peptide {
+public final class Peptide {
 
     private final String name;
     private final String peptide;
