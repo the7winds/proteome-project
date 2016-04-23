@@ -35,58 +35,38 @@ public class VariantsStandards {
     }
 
     private static Map<Integer, Integer> getModificationsMap(String varPeptide, String stdPeptide) {
-        int[][] minEdits = new int[stdPeptide.length()][varPeptide.length()];
-        int[][] dist = new int[stdPeptide.length()][varPeptide.length()];
+        int[][] maxMatch = new int[stdPeptide.length()][varPeptide.length()];
         boolean[][] back = new boolean[stdPeptide.length()][varPeptide.length()]; // true = diagonal, false = vertical
 
-        {
-            int m = -1;
-            minEdits[0][0] = stdPeptide.charAt(0) == varPeptide.charAt(0) ? 0 : 1;
-            if (minEdits[0][0] == 0) {
-                m = 0;
-                back[0][0] = true;
+        for (int matched = 0, i = 1; i < stdPeptide.length(); ++i) {
+            if (stdPeptide.charAt(i) == varPeptide.charAt(0)) {
+                matched = 1;
+                back[i][0] = true;
             }
-
-            for (int i = 1; i < stdPeptide.length(); ++i) {
-                if (m == -1) {
-                    if (stdPeptide.charAt(i) == varPeptide.charAt(0)) {
-                        m = i;
-                        minEdits[i][0] = m;
-                        back[i][0] = true;
-                    } else {
-                        minEdits[i][0] = 1;
-                        dist[i][0] = i;
-                    }
-                } else {
-                    minEdits[i][0] = m;
-                    dist[i][0] = i - m;
-                    back[i][0] = true;
-                }
-            }
+            maxMatch[i][0] = matched;
         }
 
-        for (int j, delta, i = 1; i < stdPeptide.length(); ++i) {
-            for (j = 1; j < i && j < varPeptide.length() - (i < varPeptide.length() ? 1 : 0); ++j) {
-                delta = stdPeptide.charAt(i) == varPeptide.charAt(j) ? 0 : 1;
-                if (minEdits[i - 1][j - 1] + dist[i - 1][j - 1] + delta <= minEdits[i - 1][j]) {
-                    minEdits[i][j] = minEdits[i - 1][j - 1] + dist[i - 1][j - 1] + delta;
+        for (int j, matched, i = 1; i < stdPeptide.length(); ++i) {
+            for (j = 1; j < i && j < varPeptide.length(); ++j) {
+                matched = stdPeptide.charAt(i) == varPeptide.charAt(j) ? 1 : 0;
+                if (maxMatch[i - 1][j - 1] + matched > maxMatch[i - 1][j]) {
+                    maxMatch[i][j] = maxMatch[i - 1][j - 1] + matched;
                     back[i][j] = true;
                 } else {
-                    minEdits[i][j] = minEdits[i - 1][j];
-                    dist[i][j] = dist[i - 1][j] + 1;
+                    maxMatch[i][j] = maxMatch[i - 1][j];
                     back[i][j] = false;
                 }
             }
             if (i < varPeptide.length()) {
-                delta = stdPeptide.charAt(i) == varPeptide.charAt(j) ? 0 : 1;
-                minEdits[i][j] = minEdits[i - 1][j - 1] + delta;
+                matched = stdPeptide.charAt(i) == varPeptide.charAt(j) ? 0 : 1;
+                maxMatch[i][j] = maxMatch[i - 1][j - 1] + matched;
                 back[i][j] = true;
             }
         }
 
         Map<Integer, Integer> modificationsMap = new HashMap<>();
         for (int i = stdPeptide.length() - 1,
-                j = varPeptide.length() - 1; i >= 0 && j >= 0;) {
+             j = varPeptide.length() - 1; i >= 0 && j >= 0;) {
             if (stdPeptide.charAt(i) == varPeptide.charAt(j)) {
                 modificationsMap.put(j, i);
             }
