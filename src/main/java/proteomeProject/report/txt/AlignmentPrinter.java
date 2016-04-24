@@ -77,9 +77,9 @@ public class AlignmentPrinter {
         boundsAligned.println();
     }
 
-    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double precursorDiff) {
+    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff) {
         AnnotationPrinter.print(boundsAligned, stdAnnotation);
-        boundsAligned.printf("ZERO DIFF=%f\n", precursorDiff);
+        boundsAligned.printf("ZERO DIFF=%f\n", zeroDiff);
         String cut = stdAnnotation.getType() == B
                 ? stdAnnotation.getPeptide()
                 .getPeptide()
@@ -94,9 +94,9 @@ public class AlignmentPrinter {
         boundsAligned.println();
     }
 
-    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double precursorDiff, int idx, double l, double r) {
+    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) {
         AnnotationPrinter.print(boundsAligned, stdAnnotation);
-        boundsAligned.printf("ZERO DIFF=%f\n", precursorDiff);
+        boundsAligned.printf("ZERO DIFF=%f\n", zeroDiff);
         boundsAligned.printf("SPLITTED=%s%d\t|---%f---0---%f---|\n"
                 , stdAnnotation.getType().name()
                 , idx
