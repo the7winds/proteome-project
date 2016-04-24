@@ -1,20 +1,18 @@
 package proteomeProject.report.html;
 
-import j2html.tags.ContainerTag;
 import org.apache.batik.transcoder.TranscoderException;
 import proteomeProject.annotation.Annotation;
 import proteomeProject.report.svg.AnnotationSVG;
 import proteomeProject.utils.ProjectPaths;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 
-import static j2html.TagCreator.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 
@@ -28,33 +26,42 @@ public class HtmlReport {
 
     public static void makeHtmlReport(String name, Collection<Annotation> annotations) throws IOException, TranscoderException {
         Path reportDir = ProjectPaths.getOutput().resolve(DIR);
-        Path report = reportDir.resolve(name);
         Path svgDir = reportDir.resolve(SVG);
 
         svgDir.toFile().mkdirs();
 
-        ContainerTag body = body();
+        StringBuilder stringBuilder = new StringBuilder();
         for (Annotation annotation : annotations) {
             String filename = annotation.toString() + ".svg";
             File svgFile = svgDir.resolve(filename).toFile();
             svgFile.createNewFile();
             new AnnotationSVG(svgFile, annotation).build();
+            String svgName = "\"" + "svg/" + filename + "\", ";
+            stringBuilder.append(svgName);
+        }
+        String svgPaths = stringBuilder.toString();
+        svgPaths = "var svgPaths = [" + (svgPaths.length() > 0
+                ? svgPaths.substring(0, svgPaths.length() - 2)
+                : "") + "];";
 
-            ContainerTag div = div();
-
-            ContainerTag object = object();
-            object.setAttribute("type", "image/svg+xml");
-            object.setAttribute("data", svgDir.resolve(filename).toString());
-
-            div.with(object);
-            body.with(div);
+        try (PrintStream js = new PrintStream(reportDir.resolve(name + ".js").toFile())) {
+            js.println(svgPaths);
+            Files.lines(Paths.get("src/main/resources/report/template.js"))
+                    .forEach(js::println);
         }
 
-        try (FileWriter fileWriter = new FileWriter(report.toFile())) {
-            fileWriter.write(html().with(body).render());
+        try (PrintStream html = new PrintStream(reportDir.resolve(name + ".html").toFile())) {
+            Files.lines(Paths.get("src/main/resources/report/template.html"))
+                    .forEach(s -> {
+                        html.println(s);
+                        if (s.equals("<!--script-->")) {
+                            html.printf("<script type=\"text/javascript\" src=\"%s\">" +
+                                    "</script>", name + ".js");
+                        }
+                    });
         }
 
         Files.copy(Paths.get("src/main/resources/report/amino.css"), svgDir.resolve("amino.css"), REPLACE_EXISTING);
-        Files.copy(Paths.get("src/main/resources/report/report.css"), svgDir.resolve("report.css"), REPLACE_EXISTING);
+        Files.copy(Paths.get("src/main/resources/report/alignment.css"), svgDir.resolve("alignment.css"), REPLACE_EXISTING);
     }
 }

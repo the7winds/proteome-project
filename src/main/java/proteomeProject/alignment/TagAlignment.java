@@ -45,6 +45,6 @@ public final class TagAlignment {
             AlignmentPrinter.getInstance().printStandard(annotation);
         }
 
-        HtmlReport.makeHtmlReport("alignment.html", annotations);
+        HtmlReport.makeHtmlReport("alignment", annotations);
     }
 }

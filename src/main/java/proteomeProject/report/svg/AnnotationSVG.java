@@ -50,7 +50,7 @@ public class AnnotationSVG {
 
         SVGTranscoder transcoder = new SVGTranscoder();
         transcoder.addTranscodingHint(SVGTranscoder.KEY_XML_DECLARATION,
-                "<?xml-stylesheet type=\"text/css\" href=\"report.css\" ?>\n" +
+                "<?xml-stylesheet type=\"text/css\" href=\"alignment.css\" ?>\n" +
                 "<?xml-stylesheet type=\"text/css\" href=\"amino.css\" ?>");
         Writer writer = new FileWriter(file);
         transcoder.transcode(new TranscoderInput(document), new TranscoderOutput(writer));

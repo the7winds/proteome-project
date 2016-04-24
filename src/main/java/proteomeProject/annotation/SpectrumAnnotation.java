@@ -40,7 +40,7 @@ public class SpectrumAnnotation {
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_FOUND, annotation);
         }
 
-        HtmlReport.makeHtmlReport("searchFound.html", annotations);
+        HtmlReport.makeHtmlReport("searchFound", annotations);
         annotations.clear();
 
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotFoundResults()) {
@@ -55,7 +55,7 @@ public class SpectrumAnnotation {
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_NOT_FOUND, annotation);
         }
 
-        HtmlReport.makeHtmlReport("searchNotFound.html", annotations);
+        HtmlReport.makeHtmlReport("searchNotFound", annotations);
         annotations.clear();
 
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotExistsResults()) {
@@ -70,6 +70,6 @@ public class SpectrumAnnotation {
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_NOT_EXISTS, annotation);
         }
 
-        HtmlReport.makeHtmlReport("searchNotExist.html", annotations);
+        HtmlReport.makeHtmlReport("searchNotExist", annotations);
     }
 }
