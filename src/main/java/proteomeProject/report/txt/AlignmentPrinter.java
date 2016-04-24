@@ -138,7 +138,7 @@ public class AlignmentPrinter {
         boundsAligned.printf("PRECURSOR DIFF=%f\n", precursorDiff);
         boundsAligned.printf("SPLITTED=%s%d\t|---%f---%f---%f---|\n"
                 , stdAnnotation.getType().name()
-                , idx
+                , idx + 1
                 , l
                 , stdAnnotation.getSpectrum().getPrecursorMass()
                 , r);

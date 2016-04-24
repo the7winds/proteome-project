@@ -106,10 +106,10 @@ class AlignmentTask implements Runnable {
             int stdIdx = standard.getPeptide().indexOf(tagString);
             int first = type == B
                     ? stdIdx
-                    : variant.getPeptide().length() - tag.getTag().length() - stdIdx;
+                    : standard.getPeptide().length() - tag.getTag().length() - stdIdx;
             int last = type == B
                     ? stdIdx + tag.getTag().length()
-                    : variant.getPeptide().length() - stdIdx;
+                    : standard.getPeptide().length() - stdIdx;
 
             align(standard, tag, type);
             Annotation stdAnnotation = Annotation.annotate(spec
