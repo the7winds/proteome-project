@@ -2,26 +2,32 @@ text {
     font-family: arial;
 }
 
-.info {
+.annotation .info {
     transform: translate(10px, 10px);
 }
 
-.info text {
+.info {
     font-size: 8px;
 }
 
 .axis {
+    fill: none;
     stroke: black;
     stroke-width: 0.5;
+}
+
+.annotation .axis {
     transform: translate(20px, 200px);
 }
 
 .peakNote {
+    fill: black;
     stroke: none;
     font-size: 3.5px;
 }
 
-.label text {
+.label {
+    fill: black;
     stroke: none;
     font-size: 4px;
 }
@@ -33,4 +39,16 @@ text {
 .arrow {
     stroke: black;
     stroke-width: 0.5;
+}
+
+.appendix {
+    transform: translate(10px, 270px);
+}
+
+.appendix .cut {
+    transform: translate(10px, 10px);
+}
+
+.appendix .splitted {
+    transform: translate(10px, 50px);
 }

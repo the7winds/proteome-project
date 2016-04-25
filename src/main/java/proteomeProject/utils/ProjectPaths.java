@@ -18,9 +18,18 @@ import static proteomeProject.utils.Options.sources;
 
 public class ProjectPaths {
 
+    static private Path SVG;
+    static private Path REPORT;
+
     static void resolveProjectPaths() throws IOException {
         Sources.resolveSourcesPaths();
+
+        REPORT = output.resolve("html");
+        SVG = REPORT.resolve("svg");
+
         output.toFile().mkdirs();
+        REPORT.toFile().mkdirs();
+        SVG.toFile().mkdirs();
     }
 
     /**
@@ -73,5 +82,13 @@ public class ProjectPaths {
 
     public static Path getOutput() {
         return output;
+    }
+
+    public static Path getSvg() {
+        return SVG;
+    }
+
+    public static Path getReport() {
+        return REPORT;
     }
 }

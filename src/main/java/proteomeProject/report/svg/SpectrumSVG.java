@@ -66,14 +66,9 @@ public class SpectrumSVG {
 
         Element note = document.createElement("text");
         note.appendChild(document.createTextNode(text));
-        note.setAttribute("transform", "translate(0 20) rotate(90)");
-
-
-        Element pointer = document.createElement("polyline");
-        pointer.setAttribute("points", "0,5 0,20");
+        note.setAttribute("transform", "translate(0 5) rotate(90)");
 
         label.appendChild(note);
-        label.appendChild(pointer);
 
         return label;
     }

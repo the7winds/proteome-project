@@ -4,15 +4,18 @@ import org.apache.batik.transcoder.TranscoderException;
 import proteomeProject.dataEntities.Peptide;
 import proteomeProject.dataEntities.Spectrum;
 import proteomeProject.dataEntities.SpectrumWrapper;
-import proteomeProject.report.html.HtmlReport;
+import proteomeProject.report.html.HtmlAlignmentReport;
+import proteomeProject.report.svg.AnnotationSVG;
 import proteomeProject.report.txt.SearchPrinter;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResult;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
 import proteomeProject.utils.ProjectPaths;
+import proteomeProject.utils.Utils;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by the7winds on 30.03.16.
@@ -22,7 +25,7 @@ public class SpectrumAnnotation {
     public static void main(SearchVariantPeptideResults variantPeptideResults)
             throws IOException, InterruptedException, TranscoderException {
 
-        List<Annotation> annotations = new LinkedList<>();
+        Collection<String> annotations = new LinkedList<>();
         for (SearchVariantPeptideResult variantPeptideResult : variantPeptideResults.getTagFoundResults()) {
             // if (variantPeptideResult.getDelta() )
             Spectrum spectrum = SpectrumWrapper.getInstance()
@@ -36,11 +39,15 @@ public class SpectrumAnnotation {
                     , variantPeptideResult.getType()
                     , variantPeptideResult.getFirst()
                     , variantPeptideResult.getLast());
-            annotations.add(annotation);
+
+            String svgName = Utils.getSvgName(Utils.newName());
+            AnnotationSVG.build(svgName, annotation);
+            annotations.add(svgName);
+
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_FOUND, annotation);
         }
 
-        HtmlReport.makeHtmlReport("searchFound", annotations);
+        HtmlAlignmentReport.makeHtmlReport("searchFound", annotations);
         annotations.clear();
 
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotFoundResults()) {
@@ -51,11 +58,15 @@ public class SpectrumAnnotation {
             Annotation annotation = Annotation.annotate(spectrum
                     , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
                     , variantPeptideResult.getTag());
-            annotations.add(annotation);
+
+            String svgName = Utils.getSvgName(Utils.newName());
+            AnnotationSVG.build(svgName, annotation);
+            annotations.add(svgName);
+
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_NOT_FOUND, annotation);
         }
 
-        HtmlReport.makeHtmlReport("searchNotFound", annotations);
+        HtmlAlignmentReport.makeHtmlReport("searchNotFound", annotations);
         annotations.clear();
 
         for (SearchVariantPeptideResult variantPeptideResult: variantPeptideResults.getTagNotExistsResults()) {
@@ -66,10 +77,14 @@ public class SpectrumAnnotation {
             Annotation annotation = Annotation.annotate(spectrum
                     , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
                     , variantPeptideResult.getTag());
-            annotations.add(annotation);
+
+            String svgName = Utils.getSvgName(Utils.newName());
+            AnnotationSVG.build(svgName, annotation);
+            annotations.add(svgName);
+
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_NOT_EXISTS, annotation);
         }
 
-        HtmlReport.makeHtmlReport("searchNotExist", annotations);
+        HtmlAlignmentReport.makeHtmlReport("searchNotExist", annotations);
     }
 }

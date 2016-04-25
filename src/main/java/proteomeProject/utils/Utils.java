@@ -2,6 +2,7 @@ package proteomeProject.utils;
 
 import javafx.util.Pair;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import proteomeProject.dataEntities.IonType;
 
 import java.util.LinkedList;
@@ -69,5 +70,15 @@ public class Utils {
     public static double evalTotalMass(String peptide) {
         double[] pref = getTheoreticSpectrum(peptide, Y);
         return pref[pref.length - 1];
+    }
+
+    public static String getSvgName(String name) {
+        return name + ".svg";
+    }
+
+    private static long name;
+
+    public static String newName() {
+        return Long.toString(name++);
     }
 }

@@ -3,9 +3,12 @@ package proteomeProject.alignment;
 import org.apache.commons.lang3.StringUtils;
 import proteomeProject.annotation.Annotation;
 import proteomeProject.dataEntities.*;
+import proteomeProject.report.svg.AnnotationSVG;
+import proteomeProject.report.svg.BoundsAlignedSVG;
 import proteomeProject.report.txt.AlignmentPrinter;
 import proteomeProject.report.txt.ModificationInTag;
 import proteomeProject.utils.ProjectPaths;
+import proteomeProject.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,8 +27,18 @@ class AlignmentTask implements Runnable {
     private final List<Annotation> variants;
     private final List<Annotation> standards;
 
-    AlignmentTask(Peptide variant, Tag tag, List<Annotation> variants, List<Annotation> standards) {
+    private final List<String> svgVar;
+    private final List<String> svgStd;
+
+    AlignmentTask(Peptide variant
+            , Tag tag
+            , List<Annotation> variants
+            , List<Annotation> standards
+            , List<String> svgVar
+            , List<String> svgStd) {
         this.variant = variant;
+        this.svgVar = svgVar;
+        this.svgStd = svgStd;
         this.standard = new Peptide(VariantsStandards.getInstance().variantToStandard().get(variant));
         this.tag = tag;
         this.variants = variants;
@@ -73,6 +86,11 @@ class AlignmentTask implements Runnable {
                             , first
                             , last);
                     variants.add(varAnnotation);
+
+                    String file = Utils.getSvgName(Utils.newName());
+                    svgVar.add(file);
+                    AnnotationSVG.build(file, varAnnotation);
+
                     compareWithStandard();
                 }
             }
@@ -120,6 +138,10 @@ class AlignmentTask implements Runnable {
                     , last);
             standards.add(stdAnnotation);
 
+            String file = Utils.getSvgName(Utils.newName());
+            svgStd.add(file);
+            AnnotationSVG.build(file, stdAnnotation);
+
             if (stdBetter(stdAnnotation, varAnnotation)) {
                 AlignmentPrinter.getInstance().printCompare(varAnnotation, stdAnnotation);
             }
@@ -153,6 +175,7 @@ class AlignmentTask implements Runnable {
 
         if ((!stdAnnotation.getAnnotations().get(0d).isEmpty()
                 && !stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).isEmpty())) {
+            BoundsAlignedSVG.getInstance().build(stdAnnotation);
             AlignmentPrinter.getInstance().printBoundsAligned(stdAnnotation);
         } else if (!stdAnnotation.getAnnotations().get(0d).isEmpty()) {
             int last = stdAnnotation.getPeptide().getPeptide().length() - 1;
@@ -164,8 +187,10 @@ class AlignmentTask implements Runnable {
             if (precursorDiff < 0) {
                 int idx;
                 for (idx = spec.length - 1; idx >= 0 && spec[idx] > stdAnnotation.getSpectrum().getPrecursorMass(); --idx);
+                BoundsAlignedSVG.getInstance().buildZeroAligned(stdAnnotation, precursorDiff, idx, spec[idx], spec[idx + 1]);
                 AlignmentPrinter.getInstance().printZeroAligned(stdAnnotation, precursorDiff, idx, spec[idx], spec[idx + 1]);
             } else {
+                BoundsAlignedSVG.getInstance().buildZeroAligned(stdAnnotation, precursorDiff);
                 AlignmentPrinter.getInstance().printZeroAligned(stdAnnotation, precursorDiff);
             }
         } else if (!stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).isEmpty()) {
@@ -174,8 +199,10 @@ class AlignmentTask implements Runnable {
             if (zeroDiff < 0) {
                 int idx;
                 for (idx = 0; idx < spec.length && spec[idx] < 0; ++idx);
+                BoundsAlignedSVG.getInstance().buildPrecursorAligned(stdAnnotation, zeroDiff, idx, spec[idx - 1], spec[idx]);
                 AlignmentPrinter.getInstance().printPrecursorAligned(stdAnnotation, zeroDiff, idx, spec[idx - 1], spec[idx]);
             } else {
+                BoundsAlignedSVG.getInstance().buildPrecursorAligned(stdAnnotation, zeroDiff);
                 AlignmentPrinter.getInstance().printPrecursorAligned(stdAnnotation, zeroDiff);
             }
         }

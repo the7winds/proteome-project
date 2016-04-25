@@ -8,8 +8,9 @@ import org.apache.batik.transcoder.svg2svg.SVGTranscoder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import proteomeProject.annotation.Annotation;
+import proteomeProject.utils.ProjectPaths;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -17,43 +18,44 @@ import java.io.Writer;
 /**
  * Created by the7winds on 16.04.16.
  */
-public class AnnotationSVG {
+public final class AnnotationSVG {
 
-    private static final String svgNs = SVGDOMImplementation.SVG_NAMESPACE_URI;
+    public static void build(String file, Annotation annotation) {
+        Document document = SVGDOMImplementation.getDOMImplementation()
+                .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
+        try {
+            Element SVG = document.getDocumentElement();
+            SVG.setAttribute("width"
+                    , String.valueOf(1.2 * Math.max(annotation.getSpectrum().getPrecursorMass()
+                        , 0.5 * AminoSVG.width * annotation.getPeptide().getPeptide().length())));
+            SVG.setAttribute("height", "400");
+            SVG.appendChild(getElement(document, annotation));
 
-    private final Annotation annotation;
-    private final File file;
-    private final Document document;
+            SVGTranscoder transcoder = new SVGTranscoder();
+            transcoder.addTranscodingHint(SVGTranscoder.KEY_XML_DECLARATION,
+                    "<?xml-stylesheet type=\"text/css\" href=\"annotation.css\" ?>\n" +
+                            "<?xml-stylesheet type=\"text/css\" href=\"amino.css\" ?>");
 
-    public AnnotationSVG(File file, Annotation annotation) {
-        this.file = file;
-        this.annotation = annotation;
-        document = SVGDOMImplementation.getDOMImplementation()
-                .createDocument(svgNs, "svg", null);
+            Writer writer = new FileWriter(ProjectPaths.getSvg().resolve(file).toFile());
+            transcoder.transcode(new TranscoderInput(document), new TranscoderOutput(writer));
+        } catch (IOException | TranscoderException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void build() throws IOException, TranscoderException {
-        Element svgRoot = document.getDocumentElement();
+    static Element getElement(Document document, Annotation annotation) throws FileNotFoundException {
+        Element annotationSVG = document.createElement("g");
 
-        svgRoot.setAttribute("width"
-                , String.valueOf(1.2 * Math.max(annotation.getSpectrum().getPrecursorMass()
-                , 0.5 * AminoSVG.width * annotation.getPeptide().getPeptide().length())));
-        svgRoot.setAttribute("height", "400");
+        annotationSVG.setAttribute("class", "annotation");
 
-        Element info = InfoSVG.getElement(document, annotation);
-        Element alignment = AlignmentSVG.getElement(document, annotation);
-        Element spectrum = SpectrumSVG.getElement(document, annotation);
+        Element infoSVG = InfoSVG.getElement(document, annotation);
+        Element alignmentSVG = AlignmentSVG.getElement(document, annotation);
+        Element spectrumSVG = SpectrumSVG.getElement(document, annotation);
 
-        svgRoot.appendChild(info);
-        svgRoot.appendChild(alignment);
-        svgRoot.appendChild(spectrum);
+        annotationSVG.appendChild(infoSVG);
+        annotationSVG.appendChild(alignmentSVG);
+        annotationSVG.appendChild(spectrumSVG);
 
-        SVGTranscoder transcoder = new SVGTranscoder();
-        transcoder.addTranscodingHint(SVGTranscoder.KEY_XML_DECLARATION,
-                "<?xml-stylesheet type=\"text/css\" href=\"alignment.css\" ?>\n" +
-                "<?xml-stylesheet type=\"text/css\" href=\"amino.css\" ?>");
-        Writer writer = new FileWriter(file);
-        transcoder.transcode(new TranscoderInput(document), new TranscoderOutput(writer));
+        return annotationSVG;
     }
-
 }

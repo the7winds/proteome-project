@@ -43,7 +43,7 @@ public class Main {
 
 
         Files.copy(Paths.get("src/main/resources/report/summary.html")
-                , ProjectPaths.getOutput().resolve("report").resolve("summary.html"), REPLACE_EXISTING);
+                , ProjectPaths.getReport().resolve("summary.html"), REPLACE_EXISTING);
 
         System.out.printf("time: %d", System.currentTimeMillis() - start);
     }
