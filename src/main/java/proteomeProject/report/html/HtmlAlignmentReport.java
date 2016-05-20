@@ -1,17 +1,13 @@
 package proteomeProject.report.html;
 
 import proteomeProject.utils.ProjectPaths;
-import proteomeProject.utils.Utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.stream.Collectors;
-
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 
 /**
@@ -41,8 +37,5 @@ public class HtmlAlignmentReport {
                         }
                     });
         }
-
-        Files.copy(Paths.get("src/main/resources/report/amino.css"), ProjectPaths.getSvg().resolve("amino.css"), REPLACE_EXISTING);
-        Files.copy(Paths.get("src/main/resources/report/annotation.css"), ProjectPaths.getSvg().resolve("annotation.css"), REPLACE_EXISTING);
     }
 }

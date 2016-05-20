@@ -11,58 +11,53 @@ import java.io.FileNotFoundException;
  */
 public class InfoSVG {
 
-    private static final String CLASS = "info";
+    public static class InfoSVGBuilder {
+
+        private Document document;
+        private Element group;
+        private int cnt = 0;
+
+        public InfoSVGBuilder(Document document) {
+            this.document = document;
+            group = document.createElement("g");
+            group.setAttribute("style", "font-size: 8px;");
+        }
+
+        public void addLine(String str) {
+            Element text;
+            text = document.createElement("text");
+            text.appendChild(document.createTextNode(str));
+            text.setAttribute("transform", String.format("translate(0 %d)", cnt * 10));
+            group.appendChild(text);
+            cnt++;
+        }
+
+        public Element build() {
+            return group;
+        }
+    }
 
     public static Element getElement(Document document, Annotation annotation) throws FileNotFoundException {
-        Element group = document.createElement("g");
-        group.setAttribute("class", CLASS);
+        InfoSVGBuilder infoSVGBuilder = new InfoSVGBuilder(document);
 
-        Element text;
-        text = document.createElement("text");
-        text.appendChild(document.createTextNode(String.format("SCANS=%d\n", annotation.getSpectrum().getScans())));
-        text.setAttribute("transform", "translate(0 10)");
-        group.appendChild(text);
-
-        text = document.createElement("text");
-        text.appendChild(document.createTextNode(String.format("PEPTIDE=%s\n", annotation.getPeptide().getPeptide())));
-        text.setAttribute("transform", "translate(0 20)");
-        group.appendChild(text);
-
-        text = document.createElement("text");
-        text.appendChild(document.createTextNode(String.format("NAME=%s\n", annotation.getPeptide().getName())));
-        text.setAttribute("transform", "translate(0 30)");
-        group.appendChild(text);
-
-        text = document.createElement("text");
-        text.appendChild(document.createTextNode(String.format("PRECURSOR MASS=%f\n", annotation.getSpectrum().getPrecursorMass())));
-        text.setAttribute("transform", "translate(0 40)");
-        group.appendChild(text);
-
-        text = document.createElement("text");
-        text.appendChild(document.createTextNode(String.format("THEORETICAL MASS=%f\n", annotation.getPeptide().getTheoreticMass())));
-        text.setAttribute("transform", "translate(0 50)");
-        group.appendChild(text);
-
-        text = document.createElement("text");
-        text.appendChild(document.createTextNode(String.format("PRECURSOR MASS-THEORETICAL MASS=%f\n", annotation.getSpectrum().getPrecursorMass() - annotation.getPeptide().getTheoreticMass())));
-        text.setAttribute("transform", "translate(0 60)");
-        group.appendChild(text);
+        infoSVGBuilder.addLine(String.format("SCANS=%d\n", annotation.getSpectrum().getScans()));
+        infoSVGBuilder.addLine(String.format("PEPTIDE=%s\n", annotation.getPeptide().getPeptide()));
+        infoSVGBuilder.addLine(String.format("NAME=%s\n", annotation.getPeptide().getName()));
+        infoSVGBuilder.addLine(String.format("PRECURSOR MASS=%f\n", annotation.getSpectrum().getPrecursorMass()));
+        infoSVGBuilder.addLine(String.format("THEORETICAL MASS=%f\n", annotation.getPeptide().getTheoreticMass()));
+        infoSVGBuilder.addLine(String.format("PRECURSOR MASS-THEORETICAL MASS=%f\n", annotation.getSpectrum().getPrecursorMass() - annotation.getPeptide().getTheoreticMass()));
 
         if (annotation.getTag() != null) {
             if (annotation.getType() != null) {
-                text = document.createElement("text");
-                text.appendChild(document.createTextNode(String.format("TAG=%s FIRST=%s%d LAST=%s%d\n"
+                infoSVGBuilder.addLine(String.format("TAG=%s FIRST=%s%d LAST=%s%d\n"
                         , annotation.getTag().getTag()
                         , annotation.getType().name(), annotation.getFirst()
-                        , annotation.getType().name(), annotation.getLast())));
+                        , annotation.getType().name(), annotation.getLast()));
             } else {
-                text = document.createElement("text");
-                text.appendChild(document.createTextNode(String.format("TAG=%s\n", annotation.getTag().getTag())));
+                infoSVGBuilder.addLine(String.format("TAG=%s\n", annotation.getTag().getTag()));
             }
-            text.setAttribute("transform", "translate(0 70)");
-            group.appendChild(text);
         }
 
-        return group;
+        return infoSVGBuilder.build();
     }
 }

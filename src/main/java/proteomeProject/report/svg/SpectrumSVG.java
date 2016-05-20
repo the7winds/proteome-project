@@ -14,11 +14,9 @@ import java.util.Map;
 public class SpectrumSVG {
 
     private static final double SCALE = 0.5;
-    private static final String CLASS = "spectrum";
 
     public static Element getElement(Document document, Annotation annotation) {
         Element group = document.createElement("g");
-        group.setAttribute("class", CLASS);
 
         Element axis = getAxis(document, annotation);
 
@@ -29,18 +27,17 @@ public class SpectrumSVG {
 
     private static Element getAxis(Document document, Annotation annotation) {
         Element group = document.createElement("g");
-        group.setAttribute("class", "axis");
 
         Element line = document.createElement("polyline");
 
         line.setAttribute("points", String.format("0,2 %f,2", scale(annotation.getSpectrum().getPrecursorMass())));
-        // line.setAttribute("stroke", "black");
-        // line.setAttribute("stroke-width", "1");
+        line.setAttribute("style", "stroke: black;" +
+                "stroke-width: 0.5");
 
         group.appendChild(line);
 
         for (Map.Entry<Double, List<IonType>> entry: annotation.getAnnotations().entrySet()) {
-            Element peak = getPeaK(document, entry.getKey());
+            Element peak = getPeak(document, entry.getKey());
             group.appendChild(peak);
 
             if (entry.getValue().size() > 0) {
@@ -58,6 +55,9 @@ public class SpectrumSVG {
         Element label = document.createElement("g");
         label.setAttribute("class", "label");
         label.setAttribute("transform", String.format("translate(%f 3)", x));
+        label.setAttribute("style", "fill: black;" +
+                "stroke: none;" +
+                "font-size: 4px;");
 
         String text = "";
         for (IonType ionType : types) {
@@ -73,20 +73,23 @@ public class SpectrumSVG {
         return label;
     }
 
-    private static Element getPeaK(Document document, double pos) {
+    private static Element getPeak(Document document, double pos) {
         Element peak = document.createElement("g");
         peak.setAttribute("class", "peak");
 
         double x = scale(pos);
         Element peakTick = document.createElement("polyline");
         peakTick.setAttribute("points", String.format("%f,0 %f,4", x, x));
-
+        peakTick.setAttribute("style", "stroke: black;" +
+                "strike-width: 0.5;");
         peak.appendChild(peakTick);
 
         Element peakNote = document.createElement("text");
-        peakNote.appendChild(document.createTextNode(String.valueOf(x)));
-        peakNote.setAttribute("class", "peakNote");
+        peakNote.appendChild(document.createTextNode(String.valueOf(pos)));
         peakNote.setAttribute("transform", String.format("translate(%f -2) rotate(-70)", x));
+        peakNote.setAttribute("style", "fill: black;" +
+                "stroke: none;" +
+                "font-size: 3.5px;");
 
         peak.appendChild(peakNote);
 

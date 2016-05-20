@@ -13,11 +13,8 @@ import static proteomeProject.dataEntities.IonType.Type.Y;
  */
 public class AlignmentSVG {
 
-    private static final String CLASS = "alignment";
-
     public static Element getElement(Document document, Annotation annotation) {
         Element group = document.createElement("g");
-        group.setAttribute("class", CLASS);
 
         Element peptide = AminoStringSVG.getElement(document, annotation.getPeptide().getPeptide());
         group.appendChild(peptide);
@@ -66,7 +63,7 @@ public class AlignmentSVG {
             arrowHead.setAttribute("points", String.format("%f,2 %f,0 %f,4", d, d - 4, d - 4));
         }
 
-        line.setAttribute("points", String.format("1,2 %d,2", annotation.getTag().getTag().length() * AminoSVG.width));
+        line.setAttribute("points", String.format("0,2 %d,2", annotation.getTag().getTag().length() * AminoSVG.width));
 
         Element stroke1 = document.createElement("polyline");
         stroke1.setAttribute("points", String.format("0,%d 0,%d"
@@ -84,7 +81,7 @@ public class AlignmentSVG {
         group.appendChild(arrowHead);
         group.appendChild(stroke1);
         group.appendChild(stroke2);
-
+        group.setAttribute("style", "stroke: black; stroke-width: 0.5px;");
         return group;
     }
 }

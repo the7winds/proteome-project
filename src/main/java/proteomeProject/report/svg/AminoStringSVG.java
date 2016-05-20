@@ -9,11 +9,8 @@ import proteomeProject.utils.Chemicals;
  */
 class AminoStringSVG {
 
-    private static final String CLASS = "aminostring";
-
     public static Element getElement(Document document, String aminoString) {
         Element group = document.createElement("g");
-        group.setAttribute("class", CLASS);
 
         char[] aminos = aminoString.toCharArray();
 
