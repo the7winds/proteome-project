@@ -142,8 +142,10 @@ class AlignmentTask implements Runnable {
             svgStd.add(file);
             AnnotationSVG.build(file, stdAnnotation);
 
-            if (stdBetter(stdAnnotation, varAnnotation)) {
+            if (better(stdAnnotation, varAnnotation, 1)) {
                 AlignmentPrinter.getInstance().printCompare(varAnnotation, stdAnnotation);
+            } else if (better(varAnnotation, stdAnnotation, 1)) {
+                AlignmentPrinter.getInstance().printCompareElse(varAnnotation, stdAnnotation);
             }
 
             checkBounds(stdAnnotation);
@@ -152,7 +154,7 @@ class AlignmentTask implements Runnable {
         }
     }
 
-    private boolean stdBetter(Annotation stdAnnotation, Annotation varAnnotation) {
+    private boolean better(Annotation stdAnnotation, Annotation varAnnotation, int degree) {
         int varCnt = (int) varAnnotation.getAnnotations()
                 .entrySet()
                 .stream()
@@ -165,7 +167,7 @@ class AlignmentTask implements Runnable {
                 .filter(e -> !e.getValue().isEmpty())
                 .count();
 
-        return stdCnt > varCnt;
+        return stdCnt >= varCnt + degree;
     }
 
     private void checkBounds(Annotation stdAnnotation) {
@@ -175,7 +177,7 @@ class AlignmentTask implements Runnable {
 
         if ((!stdAnnotation.getAnnotations().get(0d).isEmpty()
                 && !stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).isEmpty())) {
-            BoundsAlignedSVG.getInstance().build(stdAnnotation);
+            BoundsAlignedSVG.getInstance().buildBoundsAligned(stdAnnotation);
             AlignmentPrinter.getInstance().printBoundsAligned(stdAnnotation);
         } else if (!stdAnnotation.getAnnotations().get(0d).isEmpty()) {
             int last = stdAnnotation.getPeptide().getPeptide().length() - 1;
@@ -187,8 +189,10 @@ class AlignmentTask implements Runnable {
             if (precursorDiff < 0) {
                 int idx;
                 for (idx = spec.length - 1; idx >= 0 && spec[idx] > stdAnnotation.getSpectrum().getPrecursorMass(); --idx);
-                BoundsAlignedSVG.getInstance().buildZeroAligned(stdAnnotation, precursorDiff, idx, spec[idx], spec[idx + 1]);
-                AlignmentPrinter.getInstance().printZeroAligned(stdAnnotation, precursorDiff, idx, spec[idx], spec[idx + 1]);
+                double l = Math.abs(spec[idx] - stdAnnotation.getSpectrum().getPrecursorMass());
+                double r = Math.abs(spec[idx + 1] - stdAnnotation.getSpectrum().getPrecursorMass());
+                BoundsAlignedSVG.getInstance().buildZeroAligned(stdAnnotation, precursorDiff, idx + 1, l, r);
+                AlignmentPrinter.getInstance().printZeroAligned(stdAnnotation, precursorDiff, idx + 1, l, r);
             } else {
                 BoundsAlignedSVG.getInstance().buildZeroAligned(stdAnnotation, precursorDiff);
                 AlignmentPrinter.getInstance().printZeroAligned(stdAnnotation, precursorDiff);
