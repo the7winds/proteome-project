@@ -3,13 +3,40 @@
     <meta charset="UTF-8"/>
 </head>
 <style>
+
 section {
     margin: 20px;
     padding: 20px;
 }
+
+.navigationButton {
+    background-color: rgb(220, 220, 220);
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    width: 100%;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.navigationButton:hover {
+    background-color: rgb(150, 150, 150);
+}
+
+.navigationButton text {
+    fill: rgb(240, 240, 240);
+}
+
 </style>
 <body>
+<button class="navigationButton" onclick="loadPrevious()">
+    LOAD PREVIOUS
+</button>
 <section id="chart"></section>
+<button class="navigationButton" onclick="loadMore()">
+    LOAD MORE
+</button>
 <!--script-->
-</body>
+<script type="text/javascript" src="bounds aligned.js"></script></body>
 </html>

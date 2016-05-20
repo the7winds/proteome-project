@@ -43,7 +43,7 @@ public final class BoundsAlignedSVG {
         return INSTANCE;
     }
 
-    public String build(Annotation annotation) {
+    public String buildBoundsAligned(Annotation annotation) {
         String file = Utils.getSvgName(Utils.newName());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
@@ -83,9 +83,10 @@ public final class BoundsAlignedSVG {
                 ? p.substring(begin, end)
                 : p.substring(end, begin);
 
-
         Element appendix = document.createElement("g");
-        appendix.setAttribute("transform", "translate(10, 270)");
+        appendix.setAttribute("class", "appendix");
+        appendix.setAttribute("transform", "translate(10, 250)");
+        appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);
         infoSVGBuilder.addLine("BOUNDS ALIGNED=BOTH");
@@ -129,7 +130,7 @@ public final class BoundsAlignedSVG {
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
-        appendix.setAttribute("transform", "translate(10, 270)");
+        appendix.setAttribute("transform", "translate(10, 250)");
         appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);;
@@ -182,7 +183,9 @@ public final class BoundsAlignedSVG {
         all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
 
         Element appendix = document.createElement("g");
-        appendix.setAttribute("transform", "translate(0, 420)");
+        appendix.setAttribute("class", "appendix");
+        appendix.setAttribute("transform", "translate(10, 250)");
+        appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);
         infoSVGBuilder.addLine("BOUNDS ALIGNED=PRECURSOR");
@@ -219,7 +222,7 @@ public final class BoundsAlignedSVG {
 
         Element left = document.createElement("text");
         left.appendChild(document.createTextNode(Double.toString(l)));
-        left.setAttribute("transform", "translate(15 5) rotate(90)");
+        left.setAttribute("transform", "translate(25 5) rotate(90)");
         left.setAttribute("style", "font-size: 4px;");
 
         Element right = document.createElement("text");
@@ -229,7 +232,7 @@ public final class BoundsAlignedSVG {
 
         Element splitter = document.createElement("text");
         splitter.appendChild(document.createTextNode(Double.toString(s)));
-        splitter.setAttribute("transform", "translate(40 5) rotate(90)");
+        splitter.setAttribute("transform", "translate(50 5) rotate(90)");
         splitter.setAttribute("style", "font-size: 4px;");
 
         Element axis = document.createElement("g");
@@ -286,7 +289,7 @@ public final class BoundsAlignedSVG {
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
-        appendix.setAttribute("transform", "translate(10, 270)");
+        appendix.setAttribute("transform", "translate(10, 250)");
         appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);
@@ -311,7 +314,7 @@ public final class BoundsAlignedSVG {
         return all;
     }
 
-    public String buildZeroAligned(Annotation stdAnnotation, double precursorDiff, int idx, double l, double r) {
+    public String buildZeroAligned(Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
         String file = Utils.getSvgName(Utils.newName());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
@@ -320,7 +323,7 @@ public final class BoundsAlignedSVG {
             Element SVG = document.getDocumentElement();
             SVG.setAttribute("width", WIDTH);
             SVG.setAttribute("height", HEIGHT);
-            SVG.appendChild(getZeroAligned(document, stdAnnotation, precursorDiff, idx, l, r));
+            SVG.appendChild(getZeroAligned(document, stdAnnotation, precursorDiff, splittedIdx, l, r));
 
             SVGTranscoder transcoder = new SVGTranscoder();
 
@@ -335,21 +338,21 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getZeroAligned(Document document, Annotation stdAnnotation, double precursorDiff, int idx, double l, double r) throws FileNotFoundException {
+    private static Element getZeroAligned(Document document, Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) throws FileNotFoundException {
         Element all = document.createElement("g");
         all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
-        appendix.setAttribute("transform", "translate(10, 270)");
+        appendix.setAttribute("transform", "translate(10, 250)");
         appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);
-        infoSVGBuilder.addLine("BOUNDS ALIGNED=PRECURSOR");
-        infoSVGBuilder.addLine(String.format("ZERO DIFF=%f", precursorDiff));
+        infoSVGBuilder.addLine("BOUNDS ALIGNED=ZERO");
+        infoSVGBuilder.addLine(String.format("PRECURSOR DIFF=%f", precursorDiff));
         appendix.appendChild(infoSVGBuilder.build());
 
-        Element splitted = getSplitted(document, stdAnnotation.getType(), idx, 0, l, r);
+        Element splitted = getSplitted(document, stdAnnotation.getType(), splittedIdx, stdAnnotation.getSpectrum().getPrecursorMass(), l, r);
         splitted.setAttribute("transform", "translate(0, 60)");
         appendix.appendChild(splitted);
 
@@ -357,7 +360,7 @@ public final class BoundsAlignedSVG {
                 ? stdAnnotation.getPeptide().getPeptide()
                 : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
         cut = cut.substring(stdAnnotation.getAnnotations().get(0d).stream()
-                .min(Comparator.comparingInt(IonType::getNum)).get().getNum(), idx);
+                .min(Comparator.comparingInt(IonType::getNum)).get().getNum(), splittedIdx - 1); // idx -1 because string is indexed from zerp
         cut = stdAnnotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);

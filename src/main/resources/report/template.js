@@ -1,6 +1,7 @@
 // var svgPaths = []
 
     var svgElements = [];
+    var loadStep = 10;
     var onScreenLimit = 20;
     var onScreenFirst = 0;
     var onScreenEnd = Math.min(onScreenLimit, svgPaths.length);
@@ -18,8 +19,6 @@
         for (var i = onScreenFirst; i < onScreenEnd; ++i) {
             chartSection.appendChild(svgElements[i]);
         }
-
-        document.body.onscroll = updateChart;
     }
 
     function getSvgElement(svgPath) {
@@ -33,41 +32,45 @@
         return svgDiv;
     }
 
-    var prev = 0;
+    function loadMore() {
+        var up = Math.min(onScreenFirst + loadStep, svgElements.length - onScreenLimit);
 
-    function updateChart() {
-        document.body.onscroll = undefined;
+        if (onScreenFirst < up) {
 
-        state = document.body.scrollTop - prev;
-        prev = document.body.scrollTop;
-        if (state > 0 && onScreenEnd < svgElements.length) {
-            if (document.body.scrollTop > elementWidth * onScreenLimit * 3 / 4) {
-                clearChart();
-                onScreenEnd = Math.min(onScreenEnd + onScreenLimit / 2, svgElements.length);
-                onScreenFirst = onScreenEnd - onScreenLimit;
-                drawChart();
+            for (var i = onScreenFirst; i < up; ++i) {
+                chartSection.removeChild(svgElements[i]);
             }
-        } else if (state < 0 && onScreenFirst > 0) {
-            if (document.body.scrollHeight - document.body.scrollTop > elementWidth * onScreenLimit * 3 / 4) {
-                clearChart();
-                onScreenFirst = Math.max(onScreenFirst - onScreenLimit / 2, 0);
-                onScreenEnd = onScreenFirst + onScreenLimit;
-                drawChart();
+
+            onScreenFirst = up;
+
+            var down = Math.min(onScreenEnd + loadStep, svgElements.length);
+
+            for (var i = onScreenEnd; i < down; ++i) {
+                chartSection.appendChild(svgElements[i]);
             }
-        }
 
-        document.body.onscroll = updateChart;
-    }
-
-    function clearChart() {
-        for (var i = onScreenFirst; i < onScreenEnd; ++i) {
-            chartSection.removeChild(svgElements[i]);
+            onScreenEnd = down;
         }
     }
 
-    function drawChart() {
-        for (var i = onScreenFirst; i < onScreenEnd; ++i) {
-            chartSection.appendChild(svgElements[i]);
+    function loadPrevious() {
+        var down = Math.max(onScreenEnd - loadStep, onScreenLimit);
+
+        if (onScreenEnd > down) {
+
+            for (var i = onScreenEnd - 1; i > down ; --i) {
+                chartSection.removeChild(svgElements[i]);
+            }
+
+            onScreenEnd = down;
+
+            var up = Math.max(onScreenFirst - loadStep, 0);
+
+            for (var i = onScreenFirst; i >= up; --i) {
+                chartSection.insertBefore(svgElements[i], chartSection.firstChild);
+            }
+
+            onScreenFirst = up;
         }
     }
 

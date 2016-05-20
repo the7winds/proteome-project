@@ -27,6 +27,7 @@ public class AlignmentPrinter {
     private PrintStream standard;
     private PrintStream compare;
     private PrintStream boundsAligned;
+    private PrintStream compareElse;
 
     private AlignmentPrinter() {
         try {
@@ -34,6 +35,7 @@ public class AlignmentPrinter {
             standard = new PrintStream(ProjectPaths.getOutput().resolve(STANDARD).toFile());
             compare = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE).toFile());
             boundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(BOUNDS_ALIGNED).toFile());
+            compareElse = new PrintStream(ProjectPaths.getOutput().resolve("var better").toFile());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -55,6 +57,7 @@ public class AlignmentPrinter {
 
     public synchronized void printCompare(Annotation var, Annotation std) {
         AnnotationPrinter.print(compare, var);
+        compare.println();
         AnnotationPrinter.print(compare, std);
         compare.println("------------");
         compare.println();
@@ -79,6 +82,7 @@ public class AlignmentPrinter {
 
     public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff) {
         AnnotationPrinter.print(boundsAligned, stdAnnotation);
+        boundsAligned.println("BOUNDS ALIGNED=PRECURSOR");
         boundsAligned.printf("ZERO DIFF=%f\n", zeroDiff);
         String cut = stdAnnotation.getType() == B
                 ? stdAnnotation.getPeptide()
@@ -94,20 +98,19 @@ public class AlignmentPrinter {
         boundsAligned.println();
     }
 
-    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) {
+    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int splittedIdx, double l, double r) {
         AnnotationPrinter.print(boundsAligned, stdAnnotation);
+        boundsAligned.println("BOUNDS ALIGNED=PRECURSOR");
         boundsAligned.printf("ZERO DIFF=%f\n", zeroDiff);
         boundsAligned.printf("SPLITTED=%s%d\t|---%f---0---%f---|\n"
                 , stdAnnotation.getType().name()
-                , idx
+                , splittedIdx
                 , l
                 , r);
         String cut = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide()
-                .getPeptide()
-                : StringUtils.reverse(stdAnnotation.getPeptide()
-                .getPeptide());
-        cut = cut.substring(idx, stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).stream()
+                ? stdAnnotation.getPeptide().getPeptide()
+                : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
+        cut = cut.substring(splittedIdx, stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).stream()
                 .max(Comparator.comparingInt(IonType::getNum)).get().getNum());
         cut = stdAnnotation.getType() == B
                 ? cut
@@ -118,12 +121,11 @@ public class AlignmentPrinter {
 
     public synchronized void printZeroAligned(Annotation stdAnnotation, double precursorDiff) {
         AnnotationPrinter.print(boundsAligned, stdAnnotation);
+        boundsAligned.println("BOUNDS ALIGNED=ZERO");
         boundsAligned.printf("PRECURSOR DIFF=%f\n", precursorDiff);
         String cut = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide()
-                .getPeptide()
-                : StringUtils.reverse(stdAnnotation.getPeptide()
-                .getPeptide());
+                ? stdAnnotation.getPeptide().getPeptide()
+                : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
         cut = cut.substring(stdAnnotation.getAnnotations().get(0d).stream()
                 .min(Comparator.comparingInt(IonType::getNum)).get().getNum());
         cut = stdAnnotation.getType() == B
@@ -133,26 +135,33 @@ public class AlignmentPrinter {
         boundsAligned.println();
     }
 
-    public synchronized void printZeroAligned(Annotation stdAnnotation, double precursorDiff, int idx, double l, double r) {
+    public synchronized void printZeroAligned(Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
         AnnotationPrinter.print(boundsAligned, stdAnnotation);
+        boundsAligned.println("BOUNDS ALIGNED=ZERO");
         boundsAligned.printf("PRECURSOR DIFF=%f\n", precursorDiff);
         boundsAligned.printf("SPLITTED=%s%d\t|---%f---%f---%f---|\n"
                 , stdAnnotation.getType().name()
-                , idx + 1
+                , splittedIdx
                 , l
                 , stdAnnotation.getSpectrum().getPrecursorMass()
                 , r);
         String cut = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide()
-                .getPeptide()
-                : StringUtils.reverse(stdAnnotation.getPeptide()
-                .getPeptide());
+                ? stdAnnotation.getPeptide().getPeptide()
+                : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
         cut = cut.substring(stdAnnotation.getAnnotations().get(0d).stream()
-                .min(Comparator.comparingInt(IonType::getNum)).get().getNum(), idx);
+                .min(Comparator.comparingInt(IonType::getNum)).get().getNum(), splittedIdx - 1);
         cut = stdAnnotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
         boundsAligned.printf("CUT=%s\n", cut);
         boundsAligned.println();
+    }
+
+    public synchronized void printCompareElse(Annotation varAnnotation, Annotation stdAnnotation) {
+        AnnotationPrinter.print(compareElse, varAnnotation);
+        compareElse.println();
+        AnnotationPrinter.print(compareElse, stdAnnotation);
+        compareElse.println("------------");
+        compareElse.println();
     }
 }
