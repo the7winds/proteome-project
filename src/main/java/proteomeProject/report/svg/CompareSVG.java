@@ -127,12 +127,11 @@ public class CompareSVG {
     private static Element getVarAminoString(Document document, Annotation variant) {
         Element varAminoString = document.createElement("g");
 
-        Map<Integer, Integer> modifications = VariantsStandards.getInstance().getModifications(variant.getPeptide());
+        Map<Integer, VariantsStandards.MapAmino> modifications = VariantsStandards.getInstance().getModifications(variant.getPeptide());
 
-        for (int p = 0, i = 0; i < variant.getPeptide().getPeptide().length(); ++i) {
+        for (int i = 0; i < variant.getPeptide().getPeptide().length(); ++i) {
             Element aminoAcid = AminoSVG.getElement(document, Chemicals.AminoAcid.valueOf(variant.getPeptide().getPeptide().charAt(i)));
-            p = modifications.getOrDefault(i, ++p);
-            aminoAcid.setAttribute("transform", String.format("translate(%d, 0)", p * AminoSVG.width));
+            aminoAcid.setAttribute("transform", String.format("translate(%d, 0)", modifications.get(i).getIdx() * AminoSVG.width));
             varAminoString.appendChild(aminoAcid);
         }
 

@@ -42,7 +42,7 @@ class AlignmentTask implements Runnable {
         this.variant = variant;
         this.svgVar = svgVar;
         this.svgStd = svgStd;
-        this.standard = new Peptide(VariantsStandards.getInstance().variantToStandard().get(variant));
+        this.standard = new Peptide(VariantsStandards.getInstance().getStandard(variant.getName()));
         this.tag = tag;
         this.variants = variants;
         this.standards = standards;
@@ -51,7 +51,6 @@ class AlignmentTask implements Runnable {
     }
 
     private String tagString;
-    private int idxOfTag;
     private IonType.Type type;
     private Spectrum spec;
 
@@ -67,7 +66,7 @@ class AlignmentTask implements Runnable {
                         ? tag.getTag()
                         : StringUtils.reverse(tag.getTag());
 
-                idxOfTag = variant.getPeptide().indexOf(tagString);
+                int idxOfTag = variant.getPeptide().indexOf(tagString);
 
                 int first = type == B
                         ? idxOfTag

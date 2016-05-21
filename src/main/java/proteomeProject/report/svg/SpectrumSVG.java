@@ -8,6 +8,8 @@ import proteomeProject.dataEntities.IonType;
 import java.util.List;
 import java.util.Map;
 
+import static proteomeProject.dataEntities.IonType.Type.B;
+
 /**
  * Created by the7winds on 16.04.16.
  */
@@ -41,7 +43,7 @@ public class SpectrumSVG {
             group.appendChild(peak);
 
             if (entry.getValue().size() > 0) {
-                Element label = getLabel(document, entry.getKey(), entry.getValue());
+                Element label = getLabel(document, annotation, entry.getKey(), entry.getValue());
                 group.appendChild(label);
             }
         }
@@ -49,7 +51,7 @@ public class SpectrumSVG {
         return group;
     }
 
-    private static Element getLabel(Document document, double pos, List<IonType> types) {
+    private static Element getLabel(Document document, Annotation annotation, double pos, List<IonType> types) {
         double x = scale(pos);
 
         Element label = document.createElement("g");
@@ -61,7 +63,11 @@ public class SpectrumSVG {
 
         String text = "";
         for (IonType ionType : types) {
-            text += "\t" + ionType.toString();
+            text += String.format("\t(%s : %f)"
+                    , ionType.toString()
+                    , ionType.getType() == B
+                            ? annotation.getPeptide().getbSpectrum()[ionType.getNum()]
+                            : annotation.getPeptide().getySpectrum()[ionType.getNum()]);
         }
 
         Element note = document.createElement("text");
