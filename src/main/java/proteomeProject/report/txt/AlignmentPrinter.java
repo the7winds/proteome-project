@@ -20,22 +20,23 @@ public class AlignmentPrinter {
 
     private static final String ALIGNMENT = "alignment";
     private static final String STANDARD = "standard";
-    private static final String COMPARE = "compare(std better var)";
+    private static final String COMPARE_STD = "compareStd(std better than var)";
+    private static final String COMPARE_VAR = "compareStd(var better than std)";
     private static final String BOUNDS_ALIGNED = "bounds aligned";
 
     private PrintStream alignment;
     private PrintStream standard;
-    private PrintStream compare;
+    private PrintStream compareStd;
+    private PrintStream compareVar;
     private PrintStream boundsAligned;
-    private PrintStream compareElse;
 
     private AlignmentPrinter() {
         try {
             alignment = new PrintStream(ProjectPaths.getOutput().resolve(ALIGNMENT).toFile());
             standard = new PrintStream(ProjectPaths.getOutput().resolve(STANDARD).toFile());
-            compare = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE).toFile());
+            compareStd = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE_STD).toFile());
             boundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(BOUNDS_ALIGNED).toFile());
-            compareElse = new PrintStream(ProjectPaths.getOutput().resolve("var better").toFile());
+            compareVar = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE_VAR).toFile());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -45,22 +46,21 @@ public class AlignmentPrinter {
         return INSTANCE;
     }
 
-    public void printAlignment(Annotation annotation) {
+    public synchronized void printAlignment(Annotation annotation) {
         AnnotationPrinter.print(alignment, annotation);
         alignment.println();
     }
 
-    public void printStandard(Annotation annotation) {
+    public synchronized void printStandard(Annotation annotation) {
         AnnotationPrinter.print(standard, annotation);
         standard.println();
     }
 
-    public synchronized void printCompare(Annotation var, Annotation std) {
-        AnnotationPrinter.print(compare, var);
-        compare.println();
-        AnnotationPrinter.print(compare, std);
-        compare.println("------------");
-        compare.println();
+    public synchronized void printCompareStd(Annotation var, Annotation std) {
+        AnnotationPrinter.print(compareStd, var);
+        compareStd.println();
+        AnnotationPrinter.print(compareStd, std);
+        compareStd.printf("\n\n\n");
     }
 
     public synchronized void printBoundsAligned(Annotation annotation) {
@@ -157,11 +157,10 @@ public class AlignmentPrinter {
         boundsAligned.println();
     }
 
-    public synchronized void printCompareElse(Annotation varAnnotation, Annotation stdAnnotation) {
-        AnnotationPrinter.print(compareElse, varAnnotation);
-        compareElse.println();
-        AnnotationPrinter.print(compareElse, stdAnnotation);
-        compareElse.println("------------");
-        compareElse.println();
+    public synchronized void printCompareVar(Annotation varAnnotation, Annotation stdAnnotation) {
+        AnnotationPrinter.print(compareVar, varAnnotation);
+        compareVar.println();
+        AnnotationPrinter.print(compareVar, stdAnnotation);
+        compareVar.printf("\n\n\n");
     }
 }

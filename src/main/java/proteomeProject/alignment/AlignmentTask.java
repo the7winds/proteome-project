@@ -101,21 +101,17 @@ class AlignmentTask implements Runnable {
 
     // не рассматривается ситуация, когда несколько вхождений
     private static void align(Peptide peptide, Tag tag, IonType.Type type) throws IOException {
-        double[] prefixes = type == B ? peptide.getbSpectrum() : peptide.getySpectrum();
-
         double delta;
         int idx;
         if (type == B) {
             idx = peptide.getPeptide().indexOf(tag.getTag());
-            delta = tag.getPeaks()[0] - prefixes[idx];
+            delta = tag.getPeaks()[0] - peptide.getbSpectrum()[idx];
+            peptide.shiftBSpectrum(delta);
         } else {
             idx = peptide.getPeptide().indexOf(StringUtils.reverse(tag.getTag()));
             idx = peptide.getPeptide().length() - (idx + tag.getTag().length());
-            delta = tag.getPeaks()[0] - prefixes[idx];
-        }
-
-        for (int i = 0; i < prefixes.length; ++i) {
-            prefixes[i] += delta;
+            delta = tag.getPeaks()[0] - peptide.getySpectrum()[idx];
+            peptide.shiftYSpectrum(delta);
         }
     }
 
@@ -143,9 +139,9 @@ class AlignmentTask implements Runnable {
             AnnotationSVG.build(file, stdAnnotation);
 
             if (better(stdAnnotation, varAnnotation, 1)) {
-                AlignmentPrinter.getInstance().printCompare(varAnnotation, stdAnnotation);
+                AlignmentPrinter.getInstance().printCompareStd(varAnnotation, stdAnnotation);
             } else if (better(varAnnotation, stdAnnotation, 1)) {
-                AlignmentPrinter.getInstance().printCompareElse(varAnnotation, stdAnnotation);
+                AlignmentPrinter.getInstance().printCompareVar(varAnnotation, stdAnnotation);
             }
 
             checkBounds(stdAnnotation);
@@ -172,8 +168,8 @@ class AlignmentTask implements Runnable {
 
     private void checkBounds(Annotation stdAnnotation) {
         double[] spec = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide().getbSpectrum()
-                : stdAnnotation.getPeptide().getySpectrum();
+                ? stdAnnotation.getPeptide().getShiftedBSpectrum()
+                : stdAnnotation.getPeptide().getShiftedYSpectrum();
 
         if ((!stdAnnotation.getAnnotations().get(0d).isEmpty()
                 && !stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).isEmpty())) {

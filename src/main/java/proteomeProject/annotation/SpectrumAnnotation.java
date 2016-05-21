@@ -13,7 +13,6 @@ import proteomeProject.utils.ProjectPaths;
 import proteomeProject.utils.Utils;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -27,7 +26,6 @@ public class SpectrumAnnotation {
 
         Collection<String> annotations = new LinkedList<>();
         for (SearchVariantPeptideResult variantPeptideResult : variantPeptideResults.getTagFoundResults()) {
-            // if (variantPeptideResult.getDelta() )
             Spectrum spectrum = SpectrumWrapper.getInstance()
                     .findSpectrumByScans(ProjectPaths.Sources.getSources()
                             .resolve(variantPeptideResult.getFilename())

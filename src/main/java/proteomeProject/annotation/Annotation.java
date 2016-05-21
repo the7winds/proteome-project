@@ -100,7 +100,7 @@ public class Annotation {
 
     private void makeAnnotation(IonType.Type type) {
         SortedSet<Double> peaks = spectrum.getPeaks();
-        double[] theorSpec = (type == B ? peptide.getbSpectrum() : peptide.getySpectrum());
+        double[] theorSpec = (type == B ? peptide.getShiftedBSpectrum() : peptide.getShiftedYSpectrum());
 
         for (double peak : peaks) {
             for (int i = 0; i < theorSpec.length; ++i) {
