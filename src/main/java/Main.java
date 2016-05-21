@@ -28,9 +28,10 @@ public class Main {
 
         long start = System.currentTimeMillis();
 
+        // parse options
         Options.parse(args);
 
-
+        // initialize data containers;
         ContributionWrapper.init(ProjectPaths.Sources.getContribution());
         VariantsStandards.init(ProjectPaths.Sources.getVariantStandard());
         SpectrumWrapper.init(ProjectPaths.Sources.getSpectrums());

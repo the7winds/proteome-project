@@ -76,6 +76,14 @@ public class Annotation {
         return annotation;
     }
 
+    public static Annotation annotate(Spectrum spectrum, Peptide peptide, IonType.Type type) {
+        Annotation annotation = new Annotation();
+        annotation.peptide = peptide;
+        annotation.spectrum = spectrum;
+        annotation.makeAnnotation(type);
+        return annotation;
+    }
+
     public static Annotation annotate(Spectrum spectrum, Peptide peptide, Tag tag) {
         Annotation annotation = new Annotation();
         annotation.peptide = peptide;

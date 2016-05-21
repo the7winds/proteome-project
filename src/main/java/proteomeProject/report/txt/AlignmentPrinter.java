@@ -23,12 +23,14 @@ public class AlignmentPrinter {
     private static final String COMPARE_STD = "compareStd(std better than var)";
     private static final String COMPARE_VAR = "compareStd(var better than std)";
     private static final String BOUNDS_ALIGNED = "bounds aligned";
+    private static final String REVERSE_ANNOTATIONS = "reverse annotations";
 
     private PrintStream alignment;
     private PrintStream standard;
     private PrintStream compareStd;
     private PrintStream compareVar;
     private PrintStream boundsAligned;
+    private PrintStream reverseAnnotations;
 
     private AlignmentPrinter() {
         try {
@@ -37,6 +39,7 @@ public class AlignmentPrinter {
             compareStd = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE_STD).toFile());
             boundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(BOUNDS_ALIGNED).toFile());
             compareVar = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE_VAR).toFile());
+            reverseAnnotations = new PrintStream(ProjectPaths.getOutput().resolve(REVERSE_ANNOTATIONS).toFile());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -162,5 +165,12 @@ public class AlignmentPrinter {
         compareVar.println();
         AnnotationPrinter.print(compareVar, stdAnnotation);
         compareVar.printf("\n\n\n");
+    }
+
+    public void printReverseAnnotations(Annotation original, Annotation reverse) {
+        AnnotationPrinter.print(reverseAnnotations, original);
+        reverseAnnotations.println();
+        AnnotationPrinter.print(reverseAnnotations, reverse);
+        reverseAnnotations.printf("\n\n\n");
     }
 }

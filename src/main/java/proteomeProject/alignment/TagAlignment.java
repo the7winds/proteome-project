@@ -10,18 +10,13 @@ import proteomeProject.report.html.HtmlAlignmentReport;
 import proteomeProject.report.svg.BoundsAlignedSVG;
 import proteomeProject.report.txt.AlignmentPrinter;
 import proteomeProject.utils.Options;
-import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * Created by the7winds on 06.04.16.
@@ -60,5 +55,18 @@ public final class TagAlignment {
         HtmlAlignmentReport.makeHtmlReport("alignment", svgVar);
         HtmlAlignmentReport.makeHtmlReport("standards", svgStd);
         HtmlAlignmentReport.makeHtmlReport("bounds aligned", BoundsAlignedSVG.getInstance().getElements());
+
+        ConcurrentMap<Annotation, Annotation> reverseMap = new ConcurrentHashMap<>();
+        executorService = Executors.newCachedThreadPool();
+        for (Annotation annotation : annotations) {
+            executorService.execute(new SearchReverseAnnotationsTask(annotation, reverseMap));
+        }
+
+        executorService.shutdown();
+        executorService.awaitTermination(1, TimeUnit.DAYS);
+
+        for (Map.Entry<Annotation, Annotation> entry : reverseMap.entrySet()) {
+            AlignmentPrinter.getInstance().printReverseAnnotations(entry.getKey(), entry.getValue());
+        }
     }
 }
