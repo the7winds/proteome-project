@@ -38,9 +38,7 @@ public class SpectrumAnnotation {
                     , variantPeptideResult.getFirst()
                     , variantPeptideResult.getLast());
 
-            String svgName = Utils.getSvgName(Utils.newName());
-            AnnotationSVG.build(svgName, annotation);
-            annotations.add(svgName);
+            annotations.add(AnnotationSVG.buildAnnotationSVG(annotation));
 
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_FOUND, annotation);
         }
@@ -57,9 +55,7 @@ public class SpectrumAnnotation {
                     , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
                     , variantPeptideResult.getTag());
 
-            String svgName = Utils.getSvgName(Utils.newName());
-            AnnotationSVG.build(svgName, annotation);
-            annotations.add(svgName);
+            annotations.add(AnnotationSVG.buildAnnotationSVG(annotation));
 
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_NOT_FOUND, annotation);
         }
@@ -76,9 +72,7 @@ public class SpectrumAnnotation {
                     , new Peptide(variantPeptideResult.getProtein(), variantPeptideResult.getPeptide())
                     , variantPeptideResult.getTag());
 
-            String svgName = Utils.getSvgName(Utils.newName());
-            AnnotationSVG.build(svgName, annotation);
-            annotations.add(svgName);
+            annotations.add(AnnotationSVG.buildAnnotationSVG(annotation));
 
             SearchPrinter.getInstance().print(SearchPrinter.Type.TAG_NOT_EXISTS, annotation);
         }

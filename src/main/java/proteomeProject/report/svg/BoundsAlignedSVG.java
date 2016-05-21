@@ -13,7 +13,6 @@ import proteomeProject.dataEntities.IonType;
 import proteomeProject.utils.ProjectPaths;
 import proteomeProject.utils.Utils;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -44,7 +43,7 @@ public final class BoundsAlignedSVG {
     }
 
     public String buildBoundsAligned(Annotation annotation) {
-        String file = Utils.getSvgName(Utils.newName());
+        String file = "boundsAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -66,7 +65,7 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getBoundsAligned(Document document, Annotation annotation) throws FileNotFoundException {
+    private static Element getBoundsAligned(Document document, Annotation annotation) {
         Element all = document.createElement("g");
         all.appendChild(AnnotationSVG.getElement(document, annotation));
 
@@ -102,7 +101,7 @@ public final class BoundsAlignedSVG {
     }
 
     public String buildPrecursorAligned(Annotation stdAnnotation, double zeroDiff) {
-        String file = Utils.getSvgName(Utils.newName());
+        String file = "precursorAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -124,7 +123,7 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getPrecursorAligned(Document document, Annotation stdAnnotation, double zeroDiff) throws FileNotFoundException {
+    private static Element getPrecursorAligned(Document document, Annotation stdAnnotation, double zeroDiff) {
         Element all = document.createElement("g");
         all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
 
@@ -156,7 +155,7 @@ public final class BoundsAlignedSVG {
     }
 
     public String buildPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) {
-        String file = Utils.getSvgName(Utils.newName());
+        String file = "precursorAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -178,7 +177,7 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getPrecursorAligned(Document document, Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) throws FileNotFoundException {
+    private static Element getPrecursorAligned(Document document, Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) {
         Element all = document.createElement("g");
         all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
 
@@ -261,7 +260,7 @@ public final class BoundsAlignedSVG {
     }
 
     public String buildZeroAligned(Annotation stdAnnotation, double precursorDiff) {
-        String file = Utils.getSvgName(Utils.newName());
+        String file = "zeroAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -283,7 +282,7 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getZeroAligned(Document document, Annotation stdAnnotation, double precursorDiff) throws FileNotFoundException {
+    private static Element getZeroAligned(Document document, Annotation stdAnnotation, double precursorDiff) {
         Element all = document.createElement("g");
         all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
 
@@ -315,7 +314,7 @@ public final class BoundsAlignedSVG {
     }
 
     public String buildZeroAligned(Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
-        String file = Utils.getSvgName(Utils.newName());
+        String file = "zeroAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -338,7 +337,7 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getZeroAligned(Document document, Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) throws FileNotFoundException {
+    private static Element getZeroAligned(Document document, Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
         Element all = document.createElement("g");
         all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
 

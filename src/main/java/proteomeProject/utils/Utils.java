@@ -2,7 +2,6 @@ package proteomeProject.utils;
 
 import javafx.util.Pair;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import proteomeProject.dataEntities.IonType;
 
 import java.util.LinkedList;
@@ -78,7 +77,7 @@ public class Utils {
 
     private static long name;
 
-    public static String newName() {
+    public static String id() {
         return Long.toString(name++);
     }
 }

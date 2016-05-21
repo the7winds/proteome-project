@@ -5,10 +5,10 @@ import proteomeProject.annotation.Annotation;
 import proteomeProject.dataEntities.*;
 import proteomeProject.report.svg.AnnotationSVG;
 import proteomeProject.report.svg.BoundsAlignedSVG;
+import proteomeProject.report.svg.CompareSVG;
 import proteomeProject.report.txt.AlignmentPrinter;
 import proteomeProject.report.txt.ModificationInTag;
 import proteomeProject.utils.ProjectPaths;
-import proteomeProject.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,12 +30,15 @@ class AlignmentTask implements Runnable {
     private final List<String> svgVar;
     private final List<String> svgStd;
 
+    private final List<String> svgCmpVarBetter;
+    private final List<String> svgCmpStdBetter;
+
     AlignmentTask(Peptide variant
             , Tag tag
             , List<Annotation> variants
             , List<Annotation> standards
             , List<String> svgVar
-            , List<String> svgStd) {
+            , List<String> svgStd, List<String> svgCmpVarBetter, List<String> svgCmpStdBetter) {
         this.variant = variant;
         this.svgVar = svgVar;
         this.svgStd = svgStd;
@@ -43,6 +46,8 @@ class AlignmentTask implements Runnable {
         this.tag = tag;
         this.variants = variants;
         this.standards = standards;
+        this.svgCmpVarBetter = svgCmpVarBetter;
+        this.svgCmpStdBetter = svgCmpStdBetter;
     }
 
     private String tagString;
@@ -87,9 +92,7 @@ class AlignmentTask implements Runnable {
                             , last);
                     variants.add(varAnnotation);
 
-                    String file = Utils.getSvgName(Utils.newName());
-                    svgVar.add(file);
-                    AnnotationSVG.build(file, varAnnotation);
+                    svgVar.add(AnnotationSVG.buildAnnotationSVG(varAnnotation));
 
                     compareWithStandard();
                 }
@@ -134,13 +137,13 @@ class AlignmentTask implements Runnable {
                     , last);
             standards.add(stdAnnotation);
 
-            String file = Utils.getSvgName(Utils.newName());
-            svgStd.add(file);
-            AnnotationSVG.build(file, stdAnnotation);
+            svgStd.add(AnnotationSVG.buildAnnotationSVG(stdAnnotation));
 
             if (better(stdAnnotation, varAnnotation, 1)) {
+                svgCmpStdBetter.add(CompareSVG.build(stdAnnotation, varAnnotation));
                 AlignmentPrinter.getInstance().printCompareStd(varAnnotation, stdAnnotation);
             } else if (better(varAnnotation, stdAnnotation, 1)) {
+                svgCmpVarBetter.add(CompareSVG.build(stdAnnotation, varAnnotation));
                 AlignmentPrinter.getInstance().printCompareVar(varAnnotation, stdAnnotation);
             }
 

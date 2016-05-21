@@ -16,7 +16,7 @@ public class VariantsStandards {
 
     private static VariantsStandards INSTANCE;
     private final Map<Peptide, Peptide> varToStd = new HashMap<>();
-    private final Map<Peptide, Map<Integer, Integer>> modification = new HashMap<>();
+    private final Map<String, Map<Integer, Integer>> modification = new HashMap<>();
 
     private VariantsStandards(Path variantPath) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(variantPath.toFile()));
@@ -30,7 +30,7 @@ public class VariantsStandards {
             Peptide standard = new Peptide(stdName, stdPeptide);
 
             varToStd.put(variant, standard);
-            modification.put(variant, getModificationsMap(varPeptide, stdPeptide));
+            modification.put(variant.getName(), getModificationsMap(varPeptide, stdPeptide));
         }
     }
 
@@ -65,8 +65,7 @@ public class VariantsStandards {
         }
 
         Map<Integer, Integer> modificationsMap = new HashMap<>();
-        for (int i = stdPeptide.length() - 1,
-             j = varPeptide.length() - 1; i >= 0 && j >= 0;) {
+        for (int i = stdPeptide.length() - 1, j = varPeptide.length() - 1; i >= 0 && j >= 0;) {
             if (stdPeptide.charAt(i) == varPeptide.charAt(j)) {
                 modificationsMap.put(j, i);
             }
@@ -103,7 +102,7 @@ public class VariantsStandards {
 
     public static boolean containsModifications(String tagString, Peptide variant) {
         int idx = variant.getPeptide().indexOf(tagString);
-        Map<Integer, Integer> map = INSTANCE.modification.get(variant);
+        Map<Integer, Integer> map = INSTANCE.modification.get(variant.getName());
 
         for (int i = 0; i < tagString.length(); ++i) {
             if (map.get(idx + i) == null) {
@@ -112,5 +111,9 @@ public class VariantsStandards {
         }
 
         return false;
+    }
+
+    public Map<Integer, Integer> getModifications(Peptide variant) {
+        return modification.get(variant.getName());
     }
 }

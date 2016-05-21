@@ -9,8 +9,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import proteomeProject.annotation.Annotation;
 import proteomeProject.utils.ProjectPaths;
+import proteomeProject.utils.Utils;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -23,7 +23,9 @@ public final class AnnotationSVG {
     private static final String WIDTH = "10000";
     private static final String HEIGHT = "350";
 
-    public static void build(String file, Annotation annotation) {
+    public static String buildAnnotationSVG(Annotation annotation) {
+        String file = "annotation" + Utils.getSvgName(Utils.id());
+
         Document document = SVGDOMImplementation.getDOMImplementation()
                 .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
         try {
@@ -39,9 +41,11 @@ public final class AnnotationSVG {
         } catch (IOException | TranscoderException e) {
             e.printStackTrace();
         }
+
+        return file;
     }
 
-    static Element getElement(Document document, Annotation annotation) throws FileNotFoundException {
+    static Element getElement(Document document, Annotation annotation) {
         Element annotationSVG = document.createElement("g");
 
         annotationSVG.setAttribute("class", "annotation");

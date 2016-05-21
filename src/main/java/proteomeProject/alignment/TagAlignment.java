@@ -26,10 +26,15 @@ public final class TagAlignment {
 
     static public void main() throws InterruptedException, IOException, TranscoderException {
         ExecutorService executorService = Executors.newFixedThreadPool(Options.getThreadsNum());
+
         List<Annotation> annotations = Collections.synchronizedList(new LinkedList<>());
         List<Annotation> standards = Collections.synchronizedList(new LinkedList<>());
+
         List<String> svgVar = Collections.synchronizedList(new LinkedList<>());
         List<String> svgStd = Collections.synchronizedList(new LinkedList<>());
+
+        List<String> svgCmpVarBetter = Collections.synchronizedList(new LinkedList<>());
+        List<String> svgCmpStdBetter = Collections.synchronizedList(new LinkedList<>());
 
         for (Tag tag : ContributionWrapper.getInstance().getAllTags()) {
             for (Peptide variant : VariantsStandards.getInstance().getVariants()) {
@@ -38,7 +43,9 @@ public final class TagAlignment {
                         , annotations
                         , standards
                         , svgVar
-                        , svgStd));
+                        , svgStd
+                        , svgCmpVarBetter
+                        , svgCmpStdBetter));
             }
         }
         executorService.shutdown();
@@ -55,9 +62,12 @@ public final class TagAlignment {
         HtmlAlignmentReport.makeHtmlReport("alignment", svgVar);
         HtmlAlignmentReport.makeHtmlReport("standards", svgStd);
         HtmlAlignmentReport.makeHtmlReport("bounds aligned", BoundsAlignedSVG.getInstance().getElements());
+        HtmlAlignmentReport.makeHtmlReport("compare(std better than var)", svgCmpStdBetter);
+        HtmlAlignmentReport.makeHtmlReport("compare(var better than std)", svgCmpVarBetter);
 
         ConcurrentMap<Annotation, Annotation> reverseMap = new ConcurrentHashMap<>();
         executorService = Executors.newCachedThreadPool();
+
         for (Annotation annotation : annotations) {
             executorService.execute(new SearchReverseAnnotationsTask(annotation, reverseMap));
         }

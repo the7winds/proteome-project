@@ -9,7 +9,6 @@ import proteomeProject.dataEntities.IonType;
 import proteomeProject.dataEntities.Tag;
 import proteomeProject.report.txt.SearchPrinter;
 
-import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,7 +33,7 @@ public class SearchVariantPeptide {
         this.tsvPath = tsvPath;
     }
 
-    public static SearchVariantPeptideResults main(Path tsvPath) throws FileNotFoundException {
+    public static SearchVariantPeptideResults main(Path tsvPath) {
         SearchVariantPeptideResults results = new SearchVariantPeptide(tsvPath).search();
         SearchPrinter.getInstance().print(results);
         return results;

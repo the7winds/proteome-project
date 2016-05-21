@@ -4,8 +4,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import proteomeProject.annotation.Annotation;
 
-import java.io.FileNotFoundException;
-
 /**
  * Created by the7winds on 16.04.16.
  */
@@ -37,7 +35,7 @@ public class InfoSVG {
         }
     }
 
-    public static Element getElement(Document document, Annotation annotation) throws FileNotFoundException {
+    public static Element getElement(Document document, Annotation annotation) {
         InfoSVGBuilder infoSVGBuilder = new InfoSVGBuilder(document);
 
         infoSVGBuilder.addLine(String.format("SCANS=%d\n", annotation.getSpectrum().getScans()));

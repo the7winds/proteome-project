@@ -20,8 +20,8 @@ public class AlignmentPrinter {
 
     private static final String ALIGNMENT = "alignment";
     private static final String STANDARD = "standard";
-    private static final String COMPARE_STD = "compareStd(std better than var)";
-    private static final String COMPARE_VAR = "compareStd(var better than std)";
+    private static final String COMPARE_STD = "compare(std better than var)";
+    private static final String COMPARE_VAR = "compare(var better than std)";
     private static final String BOUNDS_ALIGNED = "bounds aligned";
     private static final String REVERSE_ANNOTATIONS = "reverse annotations";
 
