@@ -17,15 +17,15 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Created by the7winds on 21.05.16.
+ * Created by the7winds on 22.05.16.
  */
-public class CompareSVG {
+public class ReverseSVG {
 
     private static final String WIDTH = "10000";
     private static final String HEIGHT = "350";
 
-    public static String build(Annotation standard, Annotation variant) {
-        String file = "compare" + Utils.getSvgName(Utils.id());
+    public static String build(Annotation annotation, Annotation reverse) {
+        String file = "reverse" + Utils.getSvgName(Utils.id());
 
         Document document = SVGDOMImplementation.getDOMImplementation()
                 .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -33,7 +33,7 @@ public class CompareSVG {
             Element SVG = document.getDocumentElement();
             SVG.setAttribute("width", WIDTH);
             SVG.setAttribute("height", HEIGHT);
-            SVG.appendChild(getElement(document, standard, variant));
+            SVG.appendChild(getElement(document, annotation, reverse));
 
             SVGTranscoder transcoder = new SVGTranscoder();
 
@@ -46,33 +46,35 @@ public class CompareSVG {
         return file;
     }
 
-    private static Node getElement(Document document, Annotation standard, Annotation variant) {
+    private static Node getElement(Document document, Annotation annotation, Annotation reversed) {
         Element all = document.createElement("g");
         all.setAttribute("style", "font-family: arial;");
 
-        Element stdInfo = InfoSVG.getElement(document, standard);
-        stdInfo.setAttribute("transform", "translate(0, 10)");
+        Element stdInfo = InfoSVG.getElement(document, annotation);
+        stdInfo.setAttribute("transform", "translate(0, 0)");
         all.appendChild(stdInfo);
 
-        Element varInfo = InfoSVG.getElement(document, variant);
-        varInfo.setAttribute("transform", "translate(250, 10)");
-        all.appendChild(varInfo);
+        Element aminoString = AminoStringSVG.getElement(document, annotation.getPeptide().getPeptide());
+        aminoString.setAttribute("transform", "translate(0, 100)");
+        all.appendChild(aminoString);
 
+        /*
         Element peptides = ModificationsSVG.getElement(document, standard, variant);
         peptides.setAttribute("transform", "translate(0, 100)");
         all.appendChild(peptides);
+        */
 
-        Element specs = getSpecs(document, standard, variant);
-        specs.setAttribute("transform", String.format("translate(0, %d)", AminoSVG.height * 10));
+        Element specs = getSpecs(document, annotation, reversed);
+        specs.setAttribute("transform", String.format("translate(0, %d)", 150 + 2 * AminoSVG.height));
         all.appendChild(specs);
 
         return all;
     }
 
-    private static Element getSpecs(Document document, Annotation standard, Annotation variant) {
+    private static Element getSpecs(Document document, Annotation annotation, Annotation reverse) {
         SpectrumSVG.SpectrumSVGBuilder builder = new SpectrumSVG.SpectrumSVGBuilder(document);
-        builder.addSpectrum(standard);
-        builder.addSpectrum(variant);
+        builder.addSpectrum(annotation, "original");
+        builder.addSpectrum(reverse, "reverse");
 
         return builder.build();
     }

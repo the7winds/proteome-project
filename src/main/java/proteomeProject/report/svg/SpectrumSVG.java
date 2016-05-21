@@ -105,4 +105,39 @@ public class SpectrumSVG {
     private static double scale(double len) {
         return SCALE * len;
     }
+
+    public static class SpectrumSVGBuilder {
+
+        private final Element element;
+        private final Document document;
+        private int cnt = 0;
+
+        public SpectrumSVGBuilder(Document document) {
+            this.document = document;
+            this.element = document.createElement("g");
+        }
+
+        public void addSpectrum(Annotation annotation) {
+            addSpectrum(annotation, annotation.getPeptide().getName());
+        }
+
+        public Element build() {
+            return element;
+        }
+
+        public void addSpectrum(Annotation annotation, String label) {
+            Element name = document.createElement("text");
+            name.appendChild(document.createTextNode(label));
+            name.setAttribute("transform", String.format("translate(0, %d)", cnt * 90 + 5));
+            name.setAttribute("style", "font-size: 6px;");
+
+            Element spectrum = getElement(document, annotation);
+            spectrum.setAttribute("transform", String.format("translate(50, %d)", cnt * 90));
+
+            element.appendChild(name);
+            element.appendChild(spectrum);
+
+            cnt++;
+        }
+    }
 }

@@ -104,9 +104,9 @@ public class VariantsStandards {
         return varToStd.get(varName);
     }
 
-    public static boolean containsModifications(String tagString, Peptide variant) {
+    public boolean containsModifications(String tagString, Peptide variant) {
         int idx = variant.getPeptide().indexOf(tagString);
-        Map<Integer, MapAmino> map = INSTANCE.varToModifications.get(variant.getName());
+        Map<Integer, MapAmino> map = varToModifications.get(variant.getName());
 
         for (int i = 0; i < tagString.length(); ++i) {
             if (map.get(idx + i).isModification()) {

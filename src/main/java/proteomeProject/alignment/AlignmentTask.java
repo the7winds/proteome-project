@@ -118,7 +118,7 @@ class AlignmentTask implements Runnable {
     }
 
     private void compareWithStandard() throws IOException {
-        if (!VariantsStandards.containsModifications(tagString, variant)) {
+        if (!VariantsStandards.getInstance().containsModifications(tagString, variant)) {
             int stdIdx = standard.getPeptide().indexOf(tagString);
             int first = type == B
                     ? stdIdx

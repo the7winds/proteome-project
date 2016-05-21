@@ -8,6 +8,7 @@ import proteomeProject.dataEntities.Tag;
 import proteomeProject.dataEntities.VariantsStandards;
 import proteomeProject.report.html.HtmlAlignmentReport;
 import proteomeProject.report.svg.BoundsAlignedSVG;
+import proteomeProject.report.svg.ReverseSVG;
 import proteomeProject.report.txt.AlignmentPrinter;
 import proteomeProject.utils.Options;
 
@@ -75,8 +76,13 @@ public final class TagAlignment {
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.DAYS);
 
+        List<String> svgReverse = new LinkedList<>();
+
         for (Map.Entry<Annotation, Annotation> entry : reverseMap.entrySet()) {
+            svgReverse.add(ReverseSVG.build(entry.getKey(), entry.getValue()));
             AlignmentPrinter.getInstance().printReverseAnnotations(entry.getKey(), entry.getValue());
         }
+
+        HtmlAlignmentReport.makeHtmlReport("alignment reverse", svgReverse);
     }
 }
