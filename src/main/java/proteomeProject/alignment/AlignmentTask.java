@@ -3,15 +3,12 @@ package proteomeProject.alignment;
 import org.apache.commons.lang3.StringUtils;
 import proteomeProject.annotation.Annotation;
 import proteomeProject.dataEntities.*;
-import proteomeProject.report.svg.AnnotationSVG;
 import proteomeProject.report.svg.BoundsAlignedSVG;
-import proteomeProject.report.svg.CompareSVG;
 import proteomeProject.report.txt.AlignmentPrinter;
-import proteomeProject.report.txt.ModificationInTag;
 import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import static proteomeProject.dataEntities.IonType.Type.B;
 import static proteomeProject.utils.Chemicals.H2O;
@@ -24,30 +21,16 @@ class AlignmentTask implements Runnable {
     private final Peptide variant;
     private final Peptide standard;
     private final Tag tag;
-    private final List<Annotation> variants;
-    private final List<Annotation> standards;
 
-    private final List<String> svgVar;
-    private final List<String> svgStd;
-
-    private final List<String> svgCmpVarBetter;
-    private final List<String> svgCmpStdBetter;
+    private final TagAlignment.AlignmentContainer alignmentContainer;
 
     AlignmentTask(Peptide variant
             , Tag tag
-            , List<Annotation> variants
-            , List<Annotation> standards
-            , List<String> svgVar
-            , List<String> svgStd, List<String> svgCmpVarBetter, List<String> svgCmpStdBetter) {
+            , TagAlignment.AlignmentContainer alignmentContainer) {
         this.variant = variant;
-        this.svgVar = svgVar;
-        this.svgStd = svgStd;
         this.standard = new Peptide(VariantsStandards.getInstance().getStandard(variant.getName()));
         this.tag = tag;
-        this.variants = variants;
-        this.standards = standards;
-        this.svgCmpVarBetter = svgCmpVarBetter;
-        this.svgCmpStdBetter = svgCmpStdBetter;
+        this.alignmentContainer = alignmentContainer;
     }
 
     private String tagString;
@@ -89,9 +72,11 @@ class AlignmentTask implements Runnable {
                             , type
                             , first
                             , last);
-                    variants.add(varAnnotation);
+                    alignmentContainer.addVariant(varAnnotation);
 
-                    svgVar.add(AnnotationSVG.buildAnnotationSVG(varAnnotation));
+                    if (ifNotOnlyTag(varAnnotation, first, last)) {
+                        alignmentContainer.addNotOnlyTag(varAnnotation);
+                    }
 
                     compareWithStandard();
                 }
@@ -99,6 +84,13 @@ class AlignmentTask implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean ifNotOnlyTag(Annotation varAnnotation, int first, int last) {
+        return varAnnotation.getAnnotations().values().stream()
+                .flatMap(Collection::stream)
+                .mapToInt(IonType::getNum)
+                .anyMatch(n -> n < first || n > last);
     }
 
     // не рассматривается ситуация, когда несколько вхождений
@@ -134,21 +126,18 @@ class AlignmentTask implements Runnable {
                     , type
                     , first
                     , last);
-            standards.add(stdAnnotation);
 
-            svgStd.add(AnnotationSVG.buildAnnotationSVG(stdAnnotation));
+            alignmentContainer.addStandard(stdAnnotation);
 
             if (better(stdAnnotation, varAnnotation, 1)) {
-                svgCmpStdBetter.add(CompareSVG.build(stdAnnotation, varAnnotation));
-                AlignmentPrinter.getInstance().printCompareStd(varAnnotation, stdAnnotation);
+                alignmentContainer.addStdBetter(varAnnotation, stdAnnotation);
             } else if (better(varAnnotation, stdAnnotation, 1)) {
-                svgCmpVarBetter.add(CompareSVG.build(stdAnnotation, varAnnotation));
-                AlignmentPrinter.getInstance().printCompareVar(varAnnotation, stdAnnotation);
+                alignmentContainer.addVarBetter(varAnnotation, stdAnnotation);
             }
 
             checkBounds(stdAnnotation);
         } else {
-            ModificationInTag.getInstance().print(variant, standard, tag, type);
+            alignmentContainer.addModificationsInTag(varAnnotation);
         }
     }
 
@@ -168,6 +157,7 @@ class AlignmentTask implements Runnable {
         return stdCnt >= varCnt + degree;
     }
 
+    // this method has some output because I can't split it
     private void checkBounds(Annotation stdAnnotation) {
         double[] spec = stdAnnotation.getType() == B
                 ? stdAnnotation.getPeptide().getShiftedBSpectrum()

@@ -10,7 +10,6 @@ import proteomeProject.report.txt.SearchPrinter;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResult;
 import proteomeProject.searchVariantPeptide.SearchVariantPeptideResults;
 import proteomeProject.utils.ProjectPaths;
-import proteomeProject.utils.Utils;
 
 import java.io.IOException;
 import java.util.Collection;

@@ -24,6 +24,8 @@ public class AlignmentPrinter {
     private static final String COMPARE_VAR = "compare(var better than std)";
     private static final String BOUNDS_ALIGNED = "bounds aligned";
     private static final String REVERSE_ANNOTATIONS = "reverse annotations";
+    private static final String MODIFICATION_IN_TAG = "modification in tag";
+    private static final String NOT_ONLY_TAG = "not only tag";
 
     private PrintStream alignment;
     private PrintStream standard;
@@ -31,6 +33,8 @@ public class AlignmentPrinter {
     private PrintStream compareVar;
     private PrintStream boundsAligned;
     private PrintStream reverseAnnotations;
+    private PrintStream modificationInTag;
+    private PrintStream notOnlyTag;
 
     private AlignmentPrinter() {
         try {
@@ -40,6 +44,8 @@ public class AlignmentPrinter {
             boundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(BOUNDS_ALIGNED).toFile());
             compareVar = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE_VAR).toFile());
             reverseAnnotations = new PrintStream(ProjectPaths.getOutput().resolve(REVERSE_ANNOTATIONS).toFile());
+            modificationInTag = new PrintStream(ProjectPaths.getOutput().resolve(MODIFICATION_IN_TAG).toFile());
+            notOnlyTag = new PrintStream(ProjectPaths.getOutput().resolve(NOT_ONLY_TAG).toFile());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -172,5 +178,15 @@ public class AlignmentPrinter {
         reverseAnnotations.println();
         AnnotationPrinter.print(reverseAnnotations, reverse);
         reverseAnnotations.printf("\n\n\n");
+    }
+
+    public void printModifications(Annotation varAnnotation) {
+        AnnotationPrinter.print(modificationInTag, varAnnotation);
+        modificationInTag.println();
+    }
+
+    public void printNotOnlyTag(Annotation annotation) {
+        AnnotationPrinter.print(notOnlyTag, annotation);
+        notOnlyTag.println();
     }
 }
