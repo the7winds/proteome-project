@@ -58,7 +58,7 @@ public class CompareSVG {
         varInfo.setAttribute("transform", "translate(250, 10)");
         all.appendChild(varInfo);
 
-        Element peptides = ModificationsSVG.getElement(document, standard, variant);
+        Element peptides = ModificationsSVG.getElement(document, variant);
         peptides.setAttribute("transform", "translate(0, 100)");
         all.appendChild(peptides);
 

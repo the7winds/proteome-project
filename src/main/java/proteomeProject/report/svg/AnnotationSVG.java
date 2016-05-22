@@ -54,11 +54,21 @@ public final class AnnotationSVG {
         Element infoSVG = InfoSVG.getElement(document, annotation);
         infoSVG.setAttribute("transform", "translate(10, 10)");
 
-        Element alignmentSVG = AlignmentSVG.getElement(document, annotation);
-        alignmentSVG.setAttribute("transform", "translate(10, 100)");
+        Element modificationSVG = ModificationsSVG.getElement(document, annotation);
 
+        Element alignmentSVG = AlignmentSVG.getElement(document, annotation);
         Element spectrumSVG = SpectrumSVG.getElement(document, annotation);
-        spectrumSVG.setAttribute("transform", "translate(20, 200)");
+
+        int delta = 0;
+
+        if (modificationSVG != null) {
+            delta = 3 * AminoSVG.height;
+            modificationSVG.setAttribute("transform", "translate(10, 100)");
+            annotationSVG.appendChild(modificationSVG);
+        }
+
+        alignmentSVG.setAttribute("transform", String.format("translate(10, %d)", 100 + delta));
+        spectrumSVG.setAttribute("transform", String.format("translate(20, %d)", 200 + delta));
 
         annotationSVG.appendChild(infoSVG);
         annotationSVG.appendChild(alignmentSVG);
