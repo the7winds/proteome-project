@@ -17,9 +17,12 @@ public class AlignmentSVG {
         Element group = document.createElement("g");
 
         Element peptide = AminoStringSVG.getElement(document, annotation.getPeptide().getPeptide());
+        peptide.setAttribute("transform", "translate(0, 10)");
         group.appendChild(peptide);
 
         if (annotation.getTag() != null) {
+            Element nums = getNumeration(document, annotation);
+
             Element arrow = getArrow(document, annotation);
             Element tag = AminoStringSVG.getElement(document,
                     annotation.getType() == B
@@ -29,21 +32,38 @@ public class AlignmentSVG {
             if (annotation.getType() == B) {
                 tag.setAttribute("transform", String.format("translate(%d %d)"
                         , annotation.getFirst() * AminoSVG.width
-                        , AminoSVG.height));
+                        , 10 + AminoSVG.height));
                 arrow.setAttribute("transform", String.format("translate(%d %f)"
                         , annotation.getFirst() * AminoSVG.width
-                        , 2.2 * AminoSVG.height));
+                        , 10 + 2.2 * AminoSVG.height));
             } else {
                 tag.setAttribute("transform", String.format("translate(%d %d)"
                         , (annotation.getPeptide().getPeptide().length() - annotation.getFirst() - annotation.getTag().getTag().length()) * AminoSVG.width
-                        , AminoSVG.height));
+                        , 10 + AminoSVG.height));
                 arrow.setAttribute("transform", String.format("translate(%d %f)"
                         , (annotation.getPeptide().getPeptide().length() - annotation.getFirst() - annotation.getTag().getTag().length()) * AminoSVG.width
-                        , 2.2 * AminoSVG.height));
+                        , 10 + 2.2 * AminoSVG.height));
             }
 
+            group.appendChild(nums);
             group.appendChild(tag);
             group.appendChild(arrow);
+        }
+
+        return group;
+    }
+
+    private static Element getNumeration(Document document, Annotation annotation) {
+        Element group = document.createElement("g");
+
+        for (int i = 0; i < annotation.getPeptide().getPeptide().length(); ++i) {
+            Element num = document.createElement("text");
+            num.appendChild(document.createTextNode(Integer.toString(annotation.getType() == B
+                    ? i + 1
+                    : annotation.getPeptide().getPeptide().length() - i)));
+            num.setAttribute("style", "font-size: 6px;");
+            num.setAttribute("transform", String.format("translate(%d, 0)", i * AminoSVG.width + AminoSVG.width / 3));
+            group.appendChild(num);
         }
 
         return group;
