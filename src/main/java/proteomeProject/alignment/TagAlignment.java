@@ -74,6 +74,8 @@ public final class TagAlignment {
         private final Map<Annotation, Annotation> cmpVarBetter = new ConcurrentHashMap<>();
         private final Map<Annotation, Annotation> cmpStdBetter = new ConcurrentHashMap<>();
         private final List<Annotation> roundedByAnnotations = Collections.synchronizedList(new LinkedList<>());
+        private final List<BoundsAlignedContainer> stdBoundsAligned = Collections.synchronizedList(new LinkedList<>());
+        private final List<BoundsAlignedContainer> varBoundsAligned = Collections.synchronizedList(new LinkedList<>());
 
         void addVariant(Annotation annotation) {
             variants.add(annotation);
@@ -132,12 +134,6 @@ public final class TagAlignment {
                     e.printStackTrace();
                 }
             });
-
-            try {
-                HtmlAlignmentReport.makeHtmlReport("bounds aligned", BoundsAlignedSVG.getInstance().getElements());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             executorService.submit(() -> {
                 LinkedList<String> paths = new LinkedList<>();
@@ -204,12 +200,203 @@ public final class TagAlignment {
                 }
             });
 
+            executorService.submit(() -> {
+                LinkedList<String> paths = new LinkedList<>();
+                for (BoundsAlignedContainer boundsAlignedContainer : stdBoundsAligned) {
+                    switch (boundsAlignedContainer.type) {
+                        case BOTH:
+                            AlignmentPrinter.getInstance().printBoundsAligned(boundsAlignedContainer.annotation, true);
+                            paths.add(BoundsAlignedSVG.buildBoundsAligned(boundsAlignedContainer.annotation));
+                            break;
+                        case ZERO:
+                            AlignmentPrinter.getInstance().printZeroAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , true);
+                            paths.add(BoundsAlignedSVG.buildZeroAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff));
+                            break;
+                        case ZERO_SPLITED:
+                            AlignmentPrinter.getInstance().printZeroAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , boundsAlignedContainer.idx
+                                    , boundsAlignedContainer.l
+                                    , boundsAlignedContainer.r
+                                    , true);
+                            paths.add(BoundsAlignedSVG.buildZeroAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , boundsAlignedContainer.idx
+                                    , boundsAlignedContainer.l
+                                    , boundsAlignedContainer.r));
+                            break;
+                        case PRECURSOR:
+                            AlignmentPrinter.getInstance().printPrecursorAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , true);
+                            paths.add(BoundsAlignedSVG.buildPrecursorAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff));
+                            break;
+                        case PRECURSOR_SPLITTED:
+                            AlignmentPrinter.getInstance().printPrecursorAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , boundsAlignedContainer.idx
+                                    , boundsAlignedContainer.l
+                                    , boundsAlignedContainer.r
+                                    , true);
+                            paths.add(BoundsAlignedSVG.buildPrecursorAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , boundsAlignedContainer.idx
+                                    , boundsAlignedContainer.l
+                                    , boundsAlignedContainer.r));
+                            break;
+                    }
+                }
+                try {
+                    HtmlAlignmentReport.makeHtmlReport("standard(bounds aligned)", paths);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            executorService.submit(() -> {
+                LinkedList<String> paths = new LinkedList<>();
+                for (BoundsAlignedContainer boundsAlignedContainer : varBoundsAligned) {
+                    switch (boundsAlignedContainer.type) {
+                        case BOTH:
+                            AlignmentPrinter.getInstance().printBoundsAligned(boundsAlignedContainer.annotation, false);
+                            paths.add(BoundsAlignedSVG.buildBoundsAligned(boundsAlignedContainer.annotation));
+                            break;
+                        case ZERO:
+                            AlignmentPrinter.getInstance().printZeroAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , false);
+                            paths.add(BoundsAlignedSVG.buildZeroAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff));
+                            break;
+                        case ZERO_SPLITED:
+                            AlignmentPrinter.getInstance().printZeroAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , boundsAlignedContainer.idx
+                                    , boundsAlignedContainer.l
+                                    , boundsAlignedContainer.r
+                                    , false);
+                            paths.add(BoundsAlignedSVG.buildZeroAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , boundsAlignedContainer.idx
+                                    , boundsAlignedContainer.l
+                                    , boundsAlignedContainer.r));
+                            break;
+                        case PRECURSOR:
+                            AlignmentPrinter.getInstance().printPrecursorAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , false);
+                            paths.add(BoundsAlignedSVG.buildPrecursorAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff));
+                            break;
+                        case PRECURSOR_SPLITTED:
+                            AlignmentPrinter.getInstance().printPrecursorAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , boundsAlignedContainer.idx
+                                    , boundsAlignedContainer.l
+                                    , boundsAlignedContainer.r
+                                    , false);
+                            paths.add(BoundsAlignedSVG.buildPrecursorAligned(boundsAlignedContainer.annotation
+                                    , boundsAlignedContainer.diff
+                                    , boundsAlignedContainer.idx
+                                    , boundsAlignedContainer.l
+                                    , boundsAlignedContainer.r));
+                            break;
+                    }
+                }
+                try {
+                    HtmlAlignmentReport.makeHtmlReport("alignment(bounds aligned)", paths);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            
             executorService.shutdown();
             executorService.awaitTermination(1, TimeUnit.DAYS);
         }
 
-        public void addRoundedByAnnotations(Annotation varAnnotation) {
+        void addRoundedByAnnotations(Annotation varAnnotation) {
             roundedByAnnotations.add(varAnnotation);
+        }
+
+        void addStdBoundsAligned(BoundsAlignedContainer boundsAlignedContainer) {
+            if (boundsAlignedContainer != null) {
+                stdBoundsAligned.add(boundsAlignedContainer);
+            }
+        }
+
+        void addVarBoundsAligned(BoundsAlignedContainer boundsAlignedContainer) {
+            if (boundsAlignedContainer != null) {
+                varBoundsAligned.add(boundsAlignedContainer);
+            }
+        }
+    }
+
+    static class BoundsAlignedContainer {
+
+        private enum Type {
+            BOTH,
+            ZERO,
+            ZERO_SPLITED,
+            PRECURSOR,
+            PRECURSOR_SPLITTED
+        }
+
+        Type type;
+        Annotation annotation;
+        int idx;
+        double l;
+        double r;
+        double diff;
+
+        private BoundsAlignedContainer() {}
+
+        static BoundsAlignedContainer getBoundsAligned(Annotation annotation) {
+            BoundsAlignedContainer boundsAlignedContainer = new BoundsAlignedContainer();
+            boundsAlignedContainer.type = Type.BOTH;
+            boundsAlignedContainer.annotation = annotation;
+            return boundsAlignedContainer;
+        }
+
+        static BoundsAlignedContainer getZeroAligned(Annotation annotation, double precursorDiff, int idx, double l, double r) {
+            BoundsAlignedContainer boundsAlignedContainer = new BoundsAlignedContainer();
+            boundsAlignedContainer.annotation = annotation;
+            boundsAlignedContainer.type = Type.ZERO_SPLITED;
+            boundsAlignedContainer.diff = precursorDiff;
+            boundsAlignedContainer.idx = idx;
+            boundsAlignedContainer.l = l;
+            boundsAlignedContainer.r = r;
+            return boundsAlignedContainer;
+        }
+
+        static BoundsAlignedContainer getZeroAligned(Annotation annotation, double precursorDiff) {
+            BoundsAlignedContainer boundsAlignedContainer = new BoundsAlignedContainer();
+            boundsAlignedContainer.annotation = annotation;
+            boundsAlignedContainer.type = Type.ZERO;
+            boundsAlignedContainer.diff = precursorDiff;
+            return boundsAlignedContainer;
+        }
+
+        static BoundsAlignedContainer getPrecursorAligned(Annotation annotation, double zeroDiff, int idx, double l, double r) {
+            BoundsAlignedContainer boundsAlignedContainer = new BoundsAlignedContainer();
+            boundsAlignedContainer.annotation = annotation;
+            boundsAlignedContainer.type = Type.PRECURSOR_SPLITTED;
+            boundsAlignedContainer.diff = zeroDiff;
+            boundsAlignedContainer.idx = idx;
+            boundsAlignedContainer.l = l;
+            boundsAlignedContainer.r = r;
+            return boundsAlignedContainer;
+        }
+
+        static BoundsAlignedContainer getPrecursorAligned(Annotation annotation, double zeroDiff) {
+            BoundsAlignedContainer boundsAlignedContainer = new BoundsAlignedContainer();
+            boundsAlignedContainer.annotation = annotation;
+            boundsAlignedContainer.type = Type.PRECURSOR;
+            boundsAlignedContainer.diff = zeroDiff;
+            return boundsAlignedContainer;
         }
     }
 }

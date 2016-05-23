@@ -13,6 +13,44 @@ class AminoSVG {
     static final int width = 20;
     static final int height = 20;
 
+    public static Element getElement(Document document, Chemicals.AminoAcid aminoAcid, int u, int d) {
+        Element group = document.createElement("g");
+
+        Element element = getElement(document, aminoAcid);
+
+        Element upperNum = document.createElement("text");
+        upperNum.setAttribute("style", "fill: white; font-size: 4px;");
+        upperNum.setAttribute("transform", String.format("translate(%d, %d)", 2, height / 4));
+        upperNum.appendChild(document.createTextNode(Integer.toString(u)));
+
+        Element lowerNum = document.createElement("text");
+        lowerNum.setAttribute("style", "fill: white; font-size: 4px;");
+        lowerNum.setAttribute("transform", String.format("translate(%d, %d)", 2, 7 * height / 8));
+        lowerNum.appendChild(document.createTextNode(Integer.toString(d)));
+
+        group.appendChild(element);
+        group.appendChild(upperNum);
+        group.appendChild(lowerNum);
+
+        return group;
+    }
+
+    public static Element getElement(Document document, Chemicals.AminoAcid aminoAcid, int n) {
+        Element group = document.createElement("g");
+
+        Element element = getElement(document, aminoAcid);
+
+        Element num = document.createElement("text");
+        num.setAttribute("style", "fill: white; font-size: 4px;");
+        num.setAttribute("transform", String.format("translate(%d, %d)", 2, height/4));
+        num.appendChild(document.createTextNode(Integer.toString(n)));
+
+        group.appendChild(element);
+        group.appendChild(num);
+
+        return group;
+    }
+
     public static Element getElement(Document document, Chemicals.AminoAcid aminoAcid) {
         Element group = document.createElement("g");
         Element rect = document.createElementNS(SVGDOMImplementation.SVG_NAMESPACE_URI, "rect");

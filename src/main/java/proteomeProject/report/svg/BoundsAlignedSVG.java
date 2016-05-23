@@ -17,9 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedList;
 
 import static proteomeProject.dataEntities.IonType.Type.B;
 
@@ -28,21 +26,13 @@ import static proteomeProject.dataEntities.IonType.Type.B;
  */
 public final class BoundsAlignedSVG {
 
-    private static final String HEIGHT = "390";
+    private static final String HEIGHT = "450";
     private static final String WIDTH = "10000";
-
-    private final Collection<String> elements = new LinkedList<>();
 
     private BoundsAlignedSVG() {
     }
 
-    private static final BoundsAlignedSVG INSTANCE = new BoundsAlignedSVG();
-
-    public static BoundsAlignedSVG getInstance() {
-        return INSTANCE;
-    }
-
-    public String buildBoundsAligned(Annotation annotation) {
+    public static String buildBoundsAligned(Annotation annotation) {
         String file = "boundsAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
@@ -56,7 +46,6 @@ public final class BoundsAlignedSVG {
             SVGTranscoder transcoder = new SVGTranscoder();
 
             Path path = ProjectPaths.getSvg().resolve(file);
-            elements.add(file);
             Writer writer = new FileWriter(path.toFile());
             transcoder.transcode(new TranscoderInput(document), new TranscoderOutput(writer));
         } catch (IOException | TranscoderException e) {
@@ -84,7 +73,7 @@ public final class BoundsAlignedSVG {
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
-        appendix.setAttribute("transform", "translate(10, 250)");
+        appendix.setAttribute("transform", "translate(10, 320)");
         appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);
@@ -100,7 +89,7 @@ public final class BoundsAlignedSVG {
         return all;
     }
 
-    public String buildPrecursorAligned(Annotation stdAnnotation, double zeroDiff) {
+    public static String buildPrecursorAligned(Annotation stdAnnotation, double zeroDiff) {
         String file = "precursorAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
@@ -114,7 +103,6 @@ public final class BoundsAlignedSVG {
             SVGTranscoder transcoder = new SVGTranscoder();
 
             Path path = ProjectPaths.getSvg().resolve(file);
-            elements.add(file);
             Writer writer = new FileWriter(path.toFile());
             transcoder.transcode(new TranscoderInput(document), new TranscoderOutput(writer));
         } catch (IOException | TranscoderException e) {
@@ -129,7 +117,7 @@ public final class BoundsAlignedSVG {
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
-        appendix.setAttribute("transform", "translate(10, 250)");
+        appendix.setAttribute("transform", "translate(10, 320)");
         appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);;
@@ -154,7 +142,7 @@ public final class BoundsAlignedSVG {
         return all;
     }
 
-    public String buildPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) {
+    public static String buildPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) {
         String file = "precursorAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
@@ -168,7 +156,6 @@ public final class BoundsAlignedSVG {
             SVGTranscoder transcoder = new SVGTranscoder();
 
             Path path = ProjectPaths.getSvg().resolve(file);
-            elements.add(file);
             Writer writer = new FileWriter(path.toFile());
             transcoder.transcode(new TranscoderInput(document), new TranscoderOutput(writer));
         } catch (TranscoderException | IOException e) {
@@ -183,7 +170,7 @@ public final class BoundsAlignedSVG {
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
-        appendix.setAttribute("transform", "translate(10, 250)");
+        appendix.setAttribute("transform", "translate(10, 320)");
         appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);
@@ -259,7 +246,7 @@ public final class BoundsAlignedSVG {
         return splitted;
     }
 
-    public String buildZeroAligned(Annotation stdAnnotation, double precursorDiff) {
+    public static String buildZeroAligned(Annotation stdAnnotation, double precursorDiff) {
         String file = "zeroAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
@@ -273,7 +260,6 @@ public final class BoundsAlignedSVG {
             SVGTranscoder transcoder = new SVGTranscoder();
 
             Path path = ProjectPaths.getSvg().resolve(file);
-            elements.add(file);
             Writer writer = new FileWriter(path.toFile());
             transcoder.transcode(new TranscoderInput(document), new TranscoderOutput(writer));
         } catch (IOException | TranscoderException e) {
@@ -288,7 +274,7 @@ public final class BoundsAlignedSVG {
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
-        appendix.setAttribute("transform", "translate(10, 250)");
+        appendix.setAttribute("transform", "translate(10, 320)");
         appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);
@@ -313,7 +299,7 @@ public final class BoundsAlignedSVG {
         return all;
     }
 
-    public String buildZeroAligned(Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
+    public static String buildZeroAligned(Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
         String file = "zeroAligned" + Utils.getSvgName(Utils.id());
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
@@ -327,7 +313,6 @@ public final class BoundsAlignedSVG {
             SVGTranscoder transcoder = new SVGTranscoder();
 
             Path path = ProjectPaths.getSvg().resolve(file);
-            elements.add(file);
             path.toFile().createNewFile();
             Writer writer = new FileWriter(path.toFile());
             transcoder.transcode(new TranscoderInput(document), new TranscoderOutput(writer));
@@ -343,7 +328,7 @@ public final class BoundsAlignedSVG {
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
-        appendix.setAttribute("transform", "translate(10, 250)");
+        appendix.setAttribute("transform", "translate(10, 320)");
         appendix.setAttribute("style", "font-family: arial");
 
         InfoSVG.InfoSVGBuilder infoSVGBuilder = new InfoSVG.InfoSVGBuilder(document);
@@ -370,9 +355,5 @@ public final class BoundsAlignedSVG {
         all.appendChild(appendix);
 
         return all;
-    }
-
-    public Collection<String> getElements() {
-        return elements;
     }
 }

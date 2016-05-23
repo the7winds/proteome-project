@@ -18,8 +18,6 @@ import static proteomeProject.utils.Chemicals.NH3;
  */
 public class Annotation {
 
-    private static final Double EPS = 0.02;
-
     private Tag tag;
     private Peptide peptide;
     private Spectrum spectrum;
@@ -112,6 +110,7 @@ public class Annotation {
 
         for (double peak : peaks) {
             for (int i = 0; i < theorSpec.length; ++i) {
+                double EPS = Math.max(0.01, Math.max(theorSpec[i], peak) * 0.00001);
                 if (Math.abs(theorSpec[i] - peak) < EPS) {
                     annotatePeak(peak, new IonType(null, type, i));
                 } else if (i > 0) {

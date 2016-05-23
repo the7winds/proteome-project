@@ -22,7 +22,8 @@ public class AlignmentPrinter {
     private static final String STANDARD = "standard";
     private static final String COMPARE_STD = "compare(std better than var)";
     private static final String COMPARE_VAR = "compare(var better than std)";
-    private static final String BOUNDS_ALIGNED = "bounds aligned";
+    private static final String STD_BOUNDS_ALIGNED = "standard(bounds aligned)";
+    private static final String VAR_BOUNDS_ALIGNED = "alignment(bounds aligned)";
     private static final String REVERSE_ANNOTATIONS = "reverse annotations";
     private static final String MODIFICATION_IN_TAG = "modification in tag";
     private static final String NOT_ONLY_TAG = "not only tag";
@@ -32,7 +33,8 @@ public class AlignmentPrinter {
     private PrintStream standard;
     private PrintStream compareStd;
     private PrintStream compareVar;
-    private PrintStream boundsAligned;
+    private PrintStream stdBoundsAligned;
+    private PrintStream varBoundsAligned;
     private PrintStream reverseAnnotations;
     private PrintStream modificationInTag;
     private PrintStream notOnlyTag;
@@ -43,7 +45,8 @@ public class AlignmentPrinter {
             alignment = new PrintStream(ProjectPaths.getOutput().resolve(ALIGNMENT).toFile());
             standard = new PrintStream(ProjectPaths.getOutput().resolve(STANDARD).toFile());
             compareStd = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE_STD).toFile());
-            boundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(BOUNDS_ALIGNED).toFile());
+            stdBoundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(STD_BOUNDS_ALIGNED).toFile());
+            varBoundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(VAR_BOUNDS_ALIGNED).toFile());
             compareVar = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE_VAR).toFile());
             reverseAnnotations = new PrintStream(ProjectPaths.getOutput().resolve(REVERSE_ANNOTATIONS).toFile());
             modificationInTag = new PrintStream(ProjectPaths.getOutput().resolve(MODIFICATION_IN_TAG).toFile());
@@ -75,8 +78,10 @@ public class AlignmentPrinter {
         compareStd.printf("\n\n\n");
     }
 
-    public synchronized void printBoundsAligned(Annotation annotation) {
-        AnnotationPrinter.print(boundsAligned, annotation);
+    public synchronized void printBoundsAligned(Annotation annotation, boolean std) {
+        PrintStream printStream = std ? stdBoundsAligned : varBoundsAligned;
+        
+        AnnotationPrinter.print(printStream, annotation);
         int begin = annotation.getAnnotations().get(0d).stream()
                 .min(Comparator.comparingDouble(IonType::getNum))
                 .get()
@@ -86,16 +91,18 @@ public class AlignmentPrinter {
                 .get()
                 .getNum();
         String p = annotation.getPeptide().getPeptide();
-        boundsAligned.printf("BOTH=%s\n", annotation.getType() == B
+        printStream.printf("BOTH=%s\n", annotation.getType() == B
                 ? p.substring(begin, end)
                 : p.substring(end, begin));
-        boundsAligned.println();
+        printStream.println();
     }
 
-    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff) {
-        AnnotationPrinter.print(boundsAligned, stdAnnotation);
-        boundsAligned.println("BOUNDS ALIGNED=PRECURSOR");
-        boundsAligned.printf("ZERO DIFF=%f\n", zeroDiff);
+    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff, boolean std) {
+        PrintStream printStream = std ? stdBoundsAligned : varBoundsAligned;
+        
+        AnnotationPrinter.print(printStream, stdAnnotation);
+        printStream.println("BOUNDS ALIGNED=PRECURSOR");
+        printStream.printf("ZERO DIFF=%f\n", zeroDiff);
         String cut = stdAnnotation.getType() == B
                 ? stdAnnotation.getPeptide()
                 .getPeptide()
@@ -106,15 +113,17 @@ public class AlignmentPrinter {
         cut = stdAnnotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
-        boundsAligned.printf("CUT=%s\n", cut);
-        boundsAligned.println();
+        printStream.printf("CUT=%s\n", cut);
+        printStream.println();
     }
 
-    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int splittedIdx, double l, double r) {
-        AnnotationPrinter.print(boundsAligned, stdAnnotation);
-        boundsAligned.println("BOUNDS ALIGNED=PRECURSOR");
-        boundsAligned.printf("ZERO DIFF=%f\n", zeroDiff);
-        boundsAligned.printf("SPLITTED=%s%d\t|---%f---0---%f---|\n"
+    public synchronized void printPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int splittedIdx, double l, double r, boolean std) {
+        PrintStream printStream = std ? stdBoundsAligned : varBoundsAligned;
+        
+        AnnotationPrinter.print(printStream, stdAnnotation);
+        printStream.println("BOUNDS ALIGNED=PRECURSOR");
+        printStream.printf("ZERO DIFF=%f\n", zeroDiff);
+        printStream.printf("SPLITTED=%s%d\t|---%f---0---%f---|\n"
                 , stdAnnotation.getType().name()
                 , splittedIdx
                 , l
@@ -127,14 +136,16 @@ public class AlignmentPrinter {
         cut = stdAnnotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
-        boundsAligned.printf("CUT=%s\n", cut);
-        boundsAligned.println();
+        printStream.printf("CUT=%s\n", cut);
+        printStream.println();
     }
 
-    public synchronized void printZeroAligned(Annotation stdAnnotation, double precursorDiff) {
-        AnnotationPrinter.print(boundsAligned, stdAnnotation);
-        boundsAligned.println("BOUNDS ALIGNED=ZERO");
-        boundsAligned.printf("PRECURSOR DIFF=%f\n", precursorDiff);
+    public synchronized void printZeroAligned(Annotation stdAnnotation, double precursorDiff, boolean std) {
+        PrintStream printStream = std ? stdBoundsAligned : varBoundsAligned;
+        
+        AnnotationPrinter.print(printStream, stdAnnotation);
+        printStream.println("BOUNDS ALIGNED=ZERO");
+        printStream.printf("PRECURSOR DIFF=%f\n", precursorDiff);
         String cut = stdAnnotation.getType() == B
                 ? stdAnnotation.getPeptide().getPeptide()
                 : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
@@ -143,15 +154,17 @@ public class AlignmentPrinter {
         cut = stdAnnotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
-        boundsAligned.printf("CUT=%s\n", cut);
-        boundsAligned.println();
+        printStream.printf("CUT=%s\n", cut);
+        printStream.println();
     }
 
-    public synchronized void printZeroAligned(Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
-        AnnotationPrinter.print(boundsAligned, stdAnnotation);
-        boundsAligned.println("BOUNDS ALIGNED=ZERO");
-        boundsAligned.printf("PRECURSOR DIFF=%f\n", precursorDiff);
-        boundsAligned.printf("SPLITTED=%s%d\t|---%f---%f---%f---|\n"
+    public synchronized void printZeroAligned(Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r, boolean std) {
+        PrintStream printStream = std ? stdBoundsAligned : varBoundsAligned;
+
+        AnnotationPrinter.print(printStream, stdAnnotation);
+        printStream.println("BOUNDS ALIGNED=ZERO");
+        printStream.printf("PRECURSOR DIFF=%f\n", precursorDiff);
+        printStream.printf("SPLITTED=%s%d\t|---%f---%f---%f---|\n"
                 , stdAnnotation.getType().name()
                 , splittedIdx
                 , l
@@ -165,8 +178,8 @@ public class AlignmentPrinter {
         cut = stdAnnotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
-        boundsAligned.printf("CUT=%s\n", cut);
-        boundsAligned.println();
+        printStream.printf("CUT=%s\n", cut);
+        printStream.println();
     }
 
     public synchronized void printCompareVar(Annotation varAnnotation, Annotation stdAnnotation) {

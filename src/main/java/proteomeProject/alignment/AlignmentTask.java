@@ -165,7 +165,8 @@ class AlignmentTask implements Runnable {
                 alignmentContainer.addVarBetter(varAnnotation, stdAnnotation);
             }
 
-            checkBounds(stdAnnotation);
+            alignmentContainer.addStdBoundsAligned(checkBounds(stdAnnotation));
+            alignmentContainer.addVarBoundsAligned(checkBounds(varAnnotation));
         } else {
             alignmentContainer.addModificationsInTag(varAnnotation);
         }
@@ -188,45 +189,41 @@ class AlignmentTask implements Runnable {
     }
 
     // this method has some output because I can't split it
-    private void checkBounds(Annotation stdAnnotation) {
-        double[] spec = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide().getShiftedBSpectrum()
-                : stdAnnotation.getPeptide().getShiftedYSpectrum();
+    private static TagAlignment.BoundsAlignedContainer checkBounds(Annotation annotation) {
+        double[] spec = annotation.getType() == B
+                ? annotation.getPeptide().getShiftedBSpectrum()
+                : annotation.getPeptide().getShiftedYSpectrum();
 
-        if ((!stdAnnotation.getAnnotations().get(0d).isEmpty()
-                && !stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).isEmpty())) {
-            BoundsAlignedSVG.getInstance().buildBoundsAligned(stdAnnotation);
-            AlignmentPrinter.getInstance().printBoundsAligned(stdAnnotation);
-        } else if (!stdAnnotation.getAnnotations().get(0d).isEmpty()) {
-            int last = stdAnnotation.getPeptide().getPeptide().length() - 1;
-            double precursorDiff = stdAnnotation.getSpectrum().getPrecursorMass() -
-                    (stdAnnotation.getType() == B
+        if ((!annotation.getAnnotations().get(0d).isEmpty()
+                && !annotation.getAnnotations().get(annotation.getSpectrum().getPrecursorMass()).isEmpty())) {
+            return TagAlignment.BoundsAlignedContainer.getBoundsAligned(annotation);
+        } else if (!annotation.getAnnotations().get(0d).isEmpty()) {
+            int last = annotation.getPeptide().getPeptide().length() - 1;
+            double precursorDiff = annotation.getSpectrum().getPrecursorMass() -
+                    (annotation.getType() == B
                             ? spec[last]
                             : (spec[last] - H2O.getMass()));
 
             if (precursorDiff < 0) {
                 int idx;
-                for (idx = spec.length - 1; idx >= 0 && spec[idx] > stdAnnotation.getSpectrum().getPrecursorMass(); --idx);
-                double l = Math.abs(spec[idx] - stdAnnotation.getSpectrum().getPrecursorMass());
-                double r = Math.abs(spec[idx + 1] - stdAnnotation.getSpectrum().getPrecursorMass());
-                BoundsAlignedSVG.getInstance().buildZeroAligned(stdAnnotation, precursorDiff, idx + 1, l, r);
-                AlignmentPrinter.getInstance().printZeroAligned(stdAnnotation, precursorDiff, idx + 1, l, r);
+                for (idx = spec.length - 1; idx >= 0 && spec[idx] > annotation.getSpectrum().getPrecursorMass(); --idx);
+                double l = Math.abs(spec[idx] - annotation.getSpectrum().getPrecursorMass());
+                double r = Math.abs(spec[idx + 1] - annotation.getSpectrum().getPrecursorMass());
+                return TagAlignment.BoundsAlignedContainer.getZeroAligned(annotation, precursorDiff, idx + 1, l, r);
             } else {
-                BoundsAlignedSVG.getInstance().buildZeroAligned(stdAnnotation, precursorDiff);
-                AlignmentPrinter.getInstance().printZeroAligned(stdAnnotation, precursorDiff);
+                return TagAlignment.BoundsAlignedContainer.getZeroAligned(annotation, precursorDiff);
             }
-        } else if (!stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).isEmpty()) {
+        } else if (!annotation.getAnnotations().get(annotation.getSpectrum().getPrecursorMass()).isEmpty()) {
             double zeroDiff = spec[0];
 
             if (zeroDiff < 0) {
                 int idx;
                 for (idx = 0; idx < spec.length && spec[idx] < 0; ++idx);
-                BoundsAlignedSVG.getInstance().buildPrecursorAligned(stdAnnotation, zeroDiff, idx, spec[idx - 1], spec[idx]);
-                AlignmentPrinter.getInstance().printPrecursorAligned(stdAnnotation, zeroDiff, idx, spec[idx - 1], spec[idx]);
+                return TagAlignment.BoundsAlignedContainer.getPrecursorAligned(annotation, zeroDiff, idx, spec[idx - 1], spec[idx]);
             } else {
-                BoundsAlignedSVG.getInstance().buildPrecursorAligned(stdAnnotation, zeroDiff);
-                AlignmentPrinter.getInstance().printPrecursorAligned(stdAnnotation, zeroDiff);
+                return TagAlignment.BoundsAlignedContainer.getPrecursorAligned(annotation, zeroDiff);
             }
         }
+        return null;
     }
 }

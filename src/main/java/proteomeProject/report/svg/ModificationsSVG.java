@@ -29,7 +29,7 @@ public class ModificationsSVG {
             varLabel.appendChild(document.createTextNode(variant.getPeptide().getName()));
             varLabel.setAttribute("transform", String.format("translate(0, %d)", 7 * AminoSVG.height / 4));
 
-            Element stdPeptide = AminoStringSVG.getElement(document, standard.getPeptide());
+            Element stdPeptide = AminoStringSVG.getElement(document, standard.getPeptide(), null);
             stdPeptide.setAttribute("transform", String.format("translate(%d, 0)", AminoSVG.width * 4));
 
             Element varPeptide = getVarAminoString(document, variant);
@@ -51,8 +51,9 @@ public class ModificationsSVG {
 
         Map<Integer, VariantsStandards.MapAmino> modifications = VariantsStandards.getInstance().getModifications(variant.getPeptide());
 
-        for (int i = 0; i < variant.getPeptide().getPeptide().length(); ++i) {
-            Element aminoAcid = AminoSVG.getElement(document, Chemicals.AminoAcid.valueOf(variant.getPeptide().getPeptide().charAt(i)));
+        int peptideLen = variant.getPeptide().getPeptide().length();
+        for (int i = 0; i < peptideLen; ++i) {
+            Element aminoAcid = AminoSVG.getElement(document, Chemicals.AminoAcid.valueOf(variant.getPeptide().getPeptide().charAt(i)), i + 1, peptideLen - i);
             aminoAcid.setAttribute("transform", String.format("translate(%d, 0)", modifications.get(i).getIdx() * AminoSVG.width));
             varAminoString.appendChild(aminoAcid);
         }
