@@ -9,6 +9,7 @@ import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import static proteomeProject.dataEntities.IonType.Type.B;
 import static proteomeProject.utils.Chemicals.H2O;
@@ -74,8 +75,12 @@ class AlignmentTask implements Runnable {
                             , last);
                     alignmentContainer.addVariant(varAnnotation);
 
-                    if (ifNotOnlyTag(varAnnotation, first, last)) {
+                    if (isNotOnlyTag(varAnnotation, first, last)) {
                         alignmentContainer.addNotOnlyTag(varAnnotation);
+                    }
+
+                    if (isRoundedByAnnotations(varAnnotation)) {
+                        alignmentContainer.addRoundedByAnnotations(varAnnotation);
                     }
 
                     compareWithStandard();
@@ -86,7 +91,32 @@ class AlignmentTask implements Runnable {
         }
     }
 
-    private boolean ifNotOnlyTag(Annotation varAnnotation, int first, int last) {
+    private boolean isRoundedByAnnotations(Annotation varAnnotation) {
+        Map<Integer, VariantsStandards.MapAmino> modifications =
+                VariantsStandards.getInstance().getModifications(varAnnotation.getPeptide());
+        if (modifications != null) {
+            return modifications.entrySet().stream()
+                    .anyMatch(e -> {
+                        if (e.getValue().isModification()) {
+                            return varAnnotation.getAnnotations().values().stream()
+                                    .flatMap(Collection::stream)
+                                    .anyMatch(x -> x.getType() == B
+                                            ? x.getNum() < e.getKey()
+                                            : x.getNum() > varAnnotation.getPeptide().getPeptide().length() - e.getKey() + 1) &&
+                                    varAnnotation.getAnnotations().values().stream()
+                                            .flatMap(Collection::stream)
+                                            .anyMatch(x -> x.getType() == B
+                                                    ? x.getNum() > e.getKey() + 1
+                                                    : x.getNum() < varAnnotation.getPeptide().getPeptide().length() - e.getKey());
+                        }
+                        return false;
+                    });
+        }
+
+        return false;
+    }
+
+    private boolean isNotOnlyTag(Annotation varAnnotation, int first, int last) {
         return varAnnotation.getAnnotations().values().stream()
                 .flatMap(Collection::stream)
                 .mapToInt(IonType::getNum)

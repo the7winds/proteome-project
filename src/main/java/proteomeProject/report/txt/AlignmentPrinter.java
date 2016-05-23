@@ -26,6 +26,7 @@ public class AlignmentPrinter {
     private static final String REVERSE_ANNOTATIONS = "reverse annotations";
     private static final String MODIFICATION_IN_TAG = "modification in tag";
     private static final String NOT_ONLY_TAG = "not only tag";
+    private static final String ROUNDED_BY_ANNOTATIONS = "rounded by annotations";
 
     private PrintStream alignment;
     private PrintStream standard;
@@ -35,6 +36,7 @@ public class AlignmentPrinter {
     private PrintStream reverseAnnotations;
     private PrintStream modificationInTag;
     private PrintStream notOnlyTag;
+    private PrintStream roundedByAnnotations;
 
     private AlignmentPrinter() {
         try {
@@ -46,6 +48,7 @@ public class AlignmentPrinter {
             reverseAnnotations = new PrintStream(ProjectPaths.getOutput().resolve(REVERSE_ANNOTATIONS).toFile());
             modificationInTag = new PrintStream(ProjectPaths.getOutput().resolve(MODIFICATION_IN_TAG).toFile());
             notOnlyTag = new PrintStream(ProjectPaths.getOutput().resolve(NOT_ONLY_TAG).toFile());
+            roundedByAnnotations = new PrintStream(ProjectPaths.getOutput().resolve(ROUNDED_BY_ANNOTATIONS).toFile());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -188,5 +191,10 @@ public class AlignmentPrinter {
     public void printNotOnlyTag(Annotation annotation) {
         AnnotationPrinter.print(notOnlyTag, annotation);
         notOnlyTag.println();
+    }
+
+    public void printRoundedByAnnotations(Annotation annotation) {
+        AnnotationPrinter.print(roundedByAnnotations, annotation);
+        roundedByAnnotations.println();
     }
 }

@@ -73,6 +73,7 @@ public final class TagAlignment {
         private final List<Annotation> modificationsInTag = Collections.synchronizedList(new LinkedList<>());
         private final Map<Annotation, Annotation> cmpVarBetter = new ConcurrentHashMap<>();
         private final Map<Annotation, Annotation> cmpStdBetter = new ConcurrentHashMap<>();
+        private final List<Annotation> roundedByAnnotations = Collections.synchronizedList(new LinkedList<>());
 
         void addVariant(Annotation annotation) {
             variants.add(annotation);
@@ -190,8 +191,25 @@ public final class TagAlignment {
                 }
             });
 
+            executorService.submit(() -> {
+                LinkedList<String> paths = new LinkedList<>();
+                for (Annotation annotation : roundedByAnnotations) {
+                    AlignmentPrinter.getInstance().printRoundedByAnnotations(annotation);
+                    paths.add(AnnotationSVG.buildAnnotationSVG(annotation));
+                }
+                try {
+                    HtmlAlignmentReport.makeHtmlReport("alignment(rounded by annotations)", paths);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
             executorService.shutdown();
             executorService.awaitTermination(1, TimeUnit.DAYS);
+        }
+
+        public void addRoundedByAnnotations(Annotation varAnnotation) {
+            roundedByAnnotations.add(varAnnotation);
         }
     }
 }
