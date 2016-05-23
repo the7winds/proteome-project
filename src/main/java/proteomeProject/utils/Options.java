@@ -56,11 +56,4 @@ public final class Options {
      */
     @Option(name = "--output")
     static Path output;
-
-    @Option(name = "--threads-num")
-    static int threadsNum = 1;
-
-    public static int getThreadsNum() {
-        return threadsNum;
-    }
 }

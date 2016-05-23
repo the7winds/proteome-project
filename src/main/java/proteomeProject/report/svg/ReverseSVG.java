@@ -9,6 +9,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import proteomeProject.annotation.Annotation;
+import proteomeProject.dataEntities.VariantsStandards;
 import proteomeProject.utils.ProjectPaths;
 import proteomeProject.utils.Utils;
 
@@ -22,7 +23,7 @@ import java.io.Writer;
 public class ReverseSVG {
 
     private static final String WIDTH = "10000";
-    private static final String HEIGHT = "350";
+    private static final String HEIGHT = "450";
 
     public static String build(Annotation annotation, Annotation reverse) {
         String file = "reverse" + Utils.getSvgName(Utils.id());
@@ -54,18 +55,16 @@ public class ReverseSVG {
         stdInfo.setAttribute("transform", "translate(0, 0)");
         all.appendChild(stdInfo);
 
-        Element aminoString = AminoStringSVG.getElement(document, annotation.getPeptide().getPeptide());
-        aminoString.setAttribute("transform", "translate(0, 100)");
-        all.appendChild(aminoString);
-
-        /*
-        Element peptides = ModificationsSVG.getElement(document, standard, variant);
+        Element peptides = ModificationsSVG.getElement(document, annotation);
         peptides.setAttribute("transform", "translate(0, 100)");
         all.appendChild(peptides);
-        */
+
+        Element alignment = AlignmentSVG.getElement(document, annotation);
+        alignment.setAttribute("transform", "translate(0, 160)");
+        all.appendChild(alignment);
 
         Element specs = getSpecs(document, annotation, reversed);
-        specs.setAttribute("transform", String.format("translate(0, %d)", 150 + 2 * AminoSVG.height));
+        specs.setAttribute("transform", "translate(0, 250)");
         all.appendChild(specs);
 
         return all;

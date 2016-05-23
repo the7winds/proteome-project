@@ -28,7 +28,7 @@ import java.util.concurrent.*;
 public final class TagAlignment {
 
     static public void main() throws InterruptedException, IOException, TranscoderException {
-        ExecutorService executorService = Executors.newFixedThreadPool(Options.getThreadsNum());
+        ExecutorService executorService = Executors.newCachedThreadPool();
 
         AlignmentContainer alignmentContainer = new AlignmentContainer();
 
