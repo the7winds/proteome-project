@@ -23,7 +23,7 @@ import java.io.Writer;
 public class ReverseSVG {
 
     private static final String WIDTH = "10000";
-    private static final String HEIGHT = "450";
+    private static final String HEIGHT = "500";
 
     public static String build(Annotation annotation, Annotation reverse) {
         String file = "reverse" + Utils.getSvgName(Utils.id());
@@ -52,7 +52,7 @@ public class ReverseSVG {
         all.setAttribute("style", "font-family: arial;");
 
         Element stdInfo = InfoSVG.getElement(document, annotation);
-        stdInfo.setAttribute("transform", "translate(0, 0)");
+        stdInfo.setAttribute("transform", "translate(0, 10)");
         all.appendChild(stdInfo);
 
         Element peptides = ModificationsSVG.getElement(document, annotation);
