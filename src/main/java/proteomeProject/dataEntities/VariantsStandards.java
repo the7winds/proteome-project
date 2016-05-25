@@ -25,10 +25,10 @@ public class VariantsStandards {
     private VariantsStandards(Path variantPath) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(variantPath.toFile()));
         while (br.ready()) {
-            String varName = br.readLine();
-            String varPeptide = br.readLine();
             String stdName = br.readLine();
             String stdPeptide = br.readLine();
+            String varName = br.readLine();
+            String varPeptide = br.readLine();
 
             Peptide variant = new Peptide(varName, varPeptide);
             Peptide standard = new Peptide(stdName, stdPeptide);

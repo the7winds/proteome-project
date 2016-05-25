@@ -24,7 +24,6 @@ public class AlignmentPrinter {
     private static final String COMPARE_VAR = "compare(var better than std)";
     private static final String STD_BOUNDS_ALIGNED = "standard(bounds aligned)";
     private static final String VAR_BOUNDS_ALIGNED = "alignment(bounds aligned)";
-    private static final String REVERSE_ANNOTATIONS = "reverse annotations";
     private static final String MODIFICATION_IN_TAG = "modification in tag";
     private static final String NOT_ONLY_TAG = "not only tag";
     private static final String ROUNDED_BY_ANNOTATIONS = "rounded by annotations";
@@ -35,7 +34,6 @@ public class AlignmentPrinter {
     private PrintStream compareVar;
     private PrintStream stdBoundsAligned;
     private PrintStream varBoundsAligned;
-    private PrintStream reverseAnnotations;
     private PrintStream modificationInTag;
     private PrintStream notOnlyTag;
     private PrintStream roundedByAnnotations;
@@ -48,7 +46,6 @@ public class AlignmentPrinter {
             stdBoundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(STD_BOUNDS_ALIGNED).toFile());
             varBoundsAligned = new PrintStream(ProjectPaths.getOutput().resolve(VAR_BOUNDS_ALIGNED).toFile());
             compareVar = new PrintStream(ProjectPaths.getOutput().resolve(COMPARE_VAR).toFile());
-            reverseAnnotations = new PrintStream(ProjectPaths.getOutput().resolve(REVERSE_ANNOTATIONS).toFile());
             modificationInTag = new PrintStream(ProjectPaths.getOutput().resolve(MODIFICATION_IN_TAG).toFile());
             notOnlyTag = new PrintStream(ProjectPaths.getOutput().resolve(NOT_ONLY_TAG).toFile());
             roundedByAnnotations = new PrintStream(ProjectPaths.getOutput().resolve(ROUNDED_BY_ANNOTATIONS).toFile());
@@ -187,13 +184,6 @@ public class AlignmentPrinter {
         compareVar.println();
         AnnotationPrinter.print(compareVar, stdAnnotation);
         compareVar.printf("\n\n\n");
-    }
-
-    public void printReverseAnnotations(Annotation original, Annotation reverse) {
-        AnnotationPrinter.print(reverseAnnotations, original);
-        reverseAnnotations.println();
-        AnnotationPrinter.print(reverseAnnotations, reverse);
-        reverseAnnotations.printf("\n\n\n");
     }
 
     public void printModifications(Annotation varAnnotation) {

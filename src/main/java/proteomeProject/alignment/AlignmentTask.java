@@ -3,8 +3,6 @@ package proteomeProject.alignment;
 import org.apache.commons.lang3.StringUtils;
 import proteomeProject.annotation.Annotation;
 import proteomeProject.dataEntities.*;
-import proteomeProject.report.svg.BoundsAlignedSVG;
-import proteomeProject.report.txt.AlignmentPrinter;
 import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
@@ -188,7 +186,6 @@ class AlignmentTask implements Runnable {
         return stdCnt >= varCnt + degree;
     }
 
-    // this method has some output because I can't split it
     private static TagAlignment.BoundsAlignedContainer checkBounds(Annotation annotation) {
         double[] spec = annotation.getType() == B
                 ? annotation.getPeptide().getShiftedBSpectrum()
