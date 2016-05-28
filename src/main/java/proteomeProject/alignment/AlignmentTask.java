@@ -7,6 +7,7 @@ import proteomeProject.utils.ProjectPaths;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static proteomeProject.dataEntities.IonType.Type.B;
@@ -89,6 +90,19 @@ class AlignmentTask implements Runnable {
         }
     }
 
+    private boolean equalsPeaks(Annotation varAnnotation) {
+        Map.Entry<Double, List<IonType>> entry = varAnnotation.getAnnotations().entrySet().stream()
+                .filter(x -> x.getValue().stream().anyMatch(o -> o.getDefect() == null))
+                .findFirst()
+                .get();
+
+        double s1 = varAnnotation.getType() == B
+                ? varAnnotation.getPeptide().getbSpectrum()[entry.getValue().get(0).getNum()]
+                : varAnnotation.getPeptide().getySpectrum()[entry.getValue().get(0).getNum()];
+        double s2 = entry.getKey();
+        return Math.abs(s1 - s2) < 0.01;
+    }
+
     private boolean isRoundedByAnnotations(Annotation varAnnotation) {
         Map<Integer, VariantsStandards.MapAmino> modifications =
                 VariantsStandards.getInstance().getModifications(varAnnotation.getPeptide());
@@ -154,7 +168,9 @@ class AlignmentTask implements Runnable {
                     , type
                     , first
                     , last);
-
+            if (equalsPeaks(stdAnnotation)) {
+                alignmentContainer.addVarEquals(stdAnnotation);
+            }
             alignmentContainer.addStandard(stdAnnotation);
 
             if (better(stdAnnotation, varAnnotation, 1)) {

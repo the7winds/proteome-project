@@ -11,8 +11,12 @@ import proteomeProject.report.svg.AnnotationSVG;
 import proteomeProject.report.svg.BoundsAlignedSVG;
 import proteomeProject.report.svg.CompareSVG;
 import proteomeProject.report.txt.AlignmentPrinter;
+import proteomeProject.report.txt.AnnotationPrinter;
+import proteomeProject.utils.ProjectPaths;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Created by the7winds on 06.04.16.
@@ -56,6 +61,7 @@ public final class TagAlignment {
         private final List<Annotation> roundedByAnnotations = Collections.synchronizedList(new LinkedList<>());
         private final List<BoundsAlignedContainer> stdBoundsAligned = Collections.synchronizedList(new LinkedList<>());
         private final List<BoundsAlignedContainer> varBoundsAligned = Collections.synchronizedList(new LinkedList<>());
+        private final List<Annotation> varEquals = Collections.synchronizedList(new LinkedList<>());
 
         void addVariant(Annotation annotation) {
             variants.add(annotation);
@@ -175,6 +181,23 @@ public final class TagAlignment {
                 }
                 try {
                     HtmlAlignmentReport.makeHtmlReport("alignment(rounded by annotations)", paths);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            executorService.submit(() -> {
+                try {
+                    Map<Integer, List<Annotation>> m = varEquals.stream().collect(Collectors.groupingBy(x -> x.getSpectrum().getScans()));
+                    FileOutputStream fo = new FileOutputStream(ProjectPaths.getOutput().resolve("varEquals").toFile(), true);
+                    PrintStream printStream = new PrintStream(fo);
+                    for (Map.Entry<Integer, List<Annotation>> e : m.entrySet()) {
+                        if (e.getValue().size() > 1) {
+                            for (Annotation a : e.getValue()) {
+                                AnnotationPrinter.print(printStream, a);
+                            }
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -312,6 +335,10 @@ public final class TagAlignment {
             if (boundsAlignedContainer != null) {
                 varBoundsAligned.add(boundsAlignedContainer);
             }
+        }
+
+        void addVarEquals(Annotation varAnnotation) {
+            varEquals.add(varAnnotation);
         }
     }
 
