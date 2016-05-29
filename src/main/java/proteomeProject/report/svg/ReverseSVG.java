@@ -9,7 +9,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import proteomeProject.annotation.Annotation;
-import proteomeProject.dataEntities.VariantsStandards;
 import proteomeProject.utils.ProjectPaths;
 import proteomeProject.utils.Utils;
 
