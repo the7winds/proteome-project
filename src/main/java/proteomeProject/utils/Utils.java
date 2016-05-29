@@ -2,7 +2,12 @@ package proteomeProject.utils;
 
 import javafx.util.Pair;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import proteomeProject.alignment.AlignmentTask;
+import proteomeProject.annotation.Annotation;
 import proteomeProject.dataEntities.IonType;
+import proteomeProject.dataEntities.Peptide;
+import proteomeProject.dataEntities.VariantsStandards;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -79,5 +84,50 @@ public class Utils {
 
     public static String id() {
         return Long.toString(name++);
+    }
+
+    public static boolean greater(Annotation first, Annotation second, int degree) {
+        int fstCnt = (int) first.getAnnotations()
+                .entrySet()
+                .stream()
+                .filter(e -> !e.getValue().isEmpty())
+                .count();
+
+        int sndCnt = (int) second.getAnnotations()
+                .entrySet()
+                .stream()
+                .filter(e -> !e.getValue().isEmpty())
+                .count();
+
+        return fstCnt >= sndCnt + degree;
+    }
+
+    public static Annotation getStandardAnnotation(Annotation annotation) {
+        String tagString = annotation.getType() == B
+                ? annotation.getTag().getTag()
+                : StringUtils.reverse(annotation.getTag().getTag());
+
+        if (!VariantsStandards.getInstance().containsModifications(tagString, annotation.getPeptide())) {
+            Peptide standard = new Peptide(VariantsStandards.getInstance().getStandard(annotation.getPeptide().getName()));
+
+            int stdIdx = standard.getPeptide().indexOf(tagString);
+            int first = annotation.getType() == B
+                    ? stdIdx
+                    : standard.getPeptide().length() - annotation.getTag().getTag().length() - stdIdx;
+            int last = annotation.getType() == B
+                    ? stdIdx + annotation.getTag().getTag().length()
+                    : standard.getPeptide().length() - stdIdx;
+
+            AlignmentTask.align(standard, annotation.getTag(), annotation.getType());
+            Annotation stdAnnotation = Annotation.annotate(annotation.getSpectrum()
+                    , standard
+                    , annotation.getTag()
+                    , annotation.getType()
+                    , first
+                    , last);
+
+            return stdAnnotation;
+        }
+        return null;
     }
 }

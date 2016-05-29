@@ -14,11 +14,11 @@ import static proteomeProject.dataEntities.IonType.Type.B;
 /**
  * Created by the7winds on 03.04.16.
  */
-final class AnnotationPrinter {
+public final class AnnotationPrinter {
 
     private static final String COLUMNS = "PEAK\tION TYPE";
 
-    static void print(PrintStream printStream, Annotation annotation) {
+    public static void print(PrintStream printStream, Annotation annotation) {
         printStream.printf("SCANS=%d\n", annotation.getSpectrum().getScans());
         printStream.printf("PEPTIDE=%s\n", annotation.getPeptide().getPeptide());
         printStream.printf("NAME=%s\n", annotation.getPeptide().getName());
