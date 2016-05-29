@@ -69,7 +69,7 @@ public final class BoundsAlignedSVG {
         String p = annotation.getPeptide().getPeptide();
         p = annotation.getType() == B
                 ? p.substring(begin, end)
-                : p.substring(end, begin);
+                : StringUtils.reverse(p).substring(begin, end);
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");

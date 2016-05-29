@@ -201,45 +201,6 @@ public class Bounds {
         }
     }
 
-    private static BoundsAlignedContainer checkBounds(Annotation annotation) {
-        double[] spec = annotation.getType() == B
-                ? annotation.getPeptide().getShiftedBSpectrum()
-                : annotation.getPeptide().getShiftedYSpectrum();
-
-        if ((!annotation.getAnnotations().get(0d).isEmpty()
-                && !annotation.getAnnotations().get(annotation.getSpectrum().getPrecursorMass()).isEmpty())) {
-            return BoundsAlignedContainer.getBoundsAligned(annotation);
-        } else if (!annotation.getAnnotations().get(0d).isEmpty()) {
-            int last = annotation.getPeptide().getPeptide().length() - 1;
-            double precursorDiff = annotation.getSpectrum().getPrecursorMass() -
-                    (annotation.getType() == B
-                            ? spec[last]
-                            : (spec[last] - H2O.getMass()));
-
-            if (precursorDiff < 0) {
-                int idx;
-                for (idx = spec.length - 1; idx >= 0 && spec[idx] > annotation.getSpectrum().getPrecursorMass(); --idx)
-                    ;
-                double l = Math.abs(spec[idx] - annotation.getSpectrum().getPrecursorMass());
-                double r = Math.abs(spec[idx + 1] - annotation.getSpectrum().getPrecursorMass());
-                return BoundsAlignedContainer.getZeroAligned(annotation, precursorDiff, idx + 1, l, r);
-            } else {
-                return BoundsAlignedContainer.getZeroAligned(annotation, precursorDiff);
-            }
-        } else if (!annotation.getAnnotations().get(annotation.getSpectrum().getPrecursorMass()).isEmpty()) {
-            double zeroDiff = spec[0];
-
-            if (zeroDiff < 0) {
-                int idx;
-                for (idx = 0; idx < spec.length && spec[idx] < 0; ++idx) ;
-                return BoundsAlignedContainer.getPrecursorAligned(annotation, zeroDiff, idx, spec[idx - 1], spec[idx]);
-            } else {
-                return BoundsAlignedContainer.getPrecursorAligned(annotation, zeroDiff);
-            }
-        }
-        return null;
-    }
-
     private static class BoundsAlignedContainer {
 
         private enum Type {
@@ -258,7 +219,7 @@ public class Bounds {
                 String p = annotation.getPeptide().getPeptide();
                 printStream.printf("BOTH=%s\n", annotation.getType() == B
                         ? p.substring(begin, end)
-                        : p.substring(end, begin));
+                        : StringUtils.reverse(p).substring(begin, end));
                 printStream.println();
             }, boundsAlignedContainer -> BoundsAlignedSVG.buildBoundsAligned(boundsAlignedContainer.annotation)),
 
@@ -368,7 +329,7 @@ public class Bounds {
             }
 
             public String printSvg(BoundsAlignedContainer boundsAlignedContainer) {
-               return svgPrinter.apply(boundsAlignedContainer);
+                return svgPrinter.apply(boundsAlignedContainer);
             }
         }
 
