@@ -2,6 +2,7 @@ package proteomeProject.alignment;
 
 import org.apache.batik.transcoder.TranscoderException;
 import proteomeProject.alignment.condition.*;
+import proteomeProject.annotation.Annotation;
 import proteomeProject.dataEntities.ContributionWrapper;
 import proteomeProject.dataEntities.Peptide;
 import proteomeProject.dataEntities.Tag;
@@ -9,6 +10,7 @@ import proteomeProject.dataEntities.VariantsStandards;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,6 +37,39 @@ public final class TagAlignment {
         conditionTasks.add(new ConditionTask(new Bounds.StdBoundsAligned()));
         conditionTasks.add(new ConditionTask(new EqualPeaks.VarEqualPeaks()));
         conditionTasks.add(new ConditionTask(new EqualPeaks.StdEqualPeaks()));
+
+        conditionTasks.add(new ConditionTask(new EqualPeaks.VarForJoin()) {
+
+            final Collection<Annotation> annotations = Collections.synchronizedList(new LinkedList<>());
+
+            @Override
+            public void eval(Annotation annotation) {
+                annotations.add(annotation);
+                condition.addIf(annotation);
+            }
+
+            @Override
+            public void makeReport() throws IOException {
+                annotations.forEach(condition::print);
+                condition.makeReport();
+            }
+        });
+        conditionTasks.add(new ConditionTask(new EqualPeaks.StdForJoin()) {
+
+            final Collection<Annotation> annotations = Collections.synchronizedList(new LinkedList<>());
+
+            @Override
+            public void eval(Annotation annotation) {
+                annotations.add(annotation);
+                condition.addIf(annotation);
+            }
+
+            @Override
+            public void makeReport() throws IOException {
+                annotations.forEach(condition::print);
+                condition.makeReport();
+            }
+        });
 
         for (Tag tag : ContributionWrapper.getInstance().getAllTags()) {
             for (Peptide variant : VariantsStandards.getInstance().getVariants()) {

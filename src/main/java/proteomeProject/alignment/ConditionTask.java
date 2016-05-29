@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class ConditionTask {
 
-    private final Condition condition;
+    protected final Condition condition;
 
     ConditionTask(Condition condition) {
         this.condition = condition;
