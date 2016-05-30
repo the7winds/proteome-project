@@ -61,9 +61,9 @@ class AminoSVG {
         rect.setAttribute("style", String.format("stroke: black;" +
                 "stroke-width: 0.5;" +
                 "fill: rgb(%d, %d, %d)"
-                , (int) aminoAcid.getAverageMass() * 131 % 256
-                , (int) aminoAcid.getAverageMass() * 231 % 256
-                , (int) aminoAcid.getAverageMass() * 337 % 256));
+                , (int) aminoAcid.getMass() * 131 % 256
+                , (int) aminoAcid.getMass() * 231 % 256
+                , (int) aminoAcid.getMass() * 337 % 256));
         group.appendChild(rect);
 
         // add acid's name

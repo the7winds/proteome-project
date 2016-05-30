@@ -47,10 +47,9 @@ public class Tag {
     public String getSpecFile() {
         return specFile;
     }
-
-    // BAD STYLE !
+    
     public String getSuffixedSpecFile() {
-        return specFile + "_msdeconv.msalign";
+        return specFile + TYPE;
     }
 
     public int getScanId() {

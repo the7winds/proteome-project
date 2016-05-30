@@ -39,18 +39,18 @@ public enum Chemicals {
         W(186.07931),
         V(99.068414);
 
-        private final double averageMass;
+        private final double mass;
 
-        AminoAcid(double averageMass) {
-            this.averageMass = averageMass;
+        AminoAcid(double mass) {
+            this.mass = mass;
         }
 
-        public double getAverageMass() {
-            return averageMass;
+        public double getMass() {
+            return mass;
         }
 
         public static double getMass(char c) {
-            return valueOf(c).getAverageMass();
+            return valueOf(c).getMass();
         }
 
         public static AminoAcid valueOf(char c) {
