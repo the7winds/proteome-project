@@ -33,7 +33,7 @@ public final class BoundsAlignedSVG {
     }
 
     public static String buildBoundsAligned(Annotation annotation) {
-        String file = "boundsAligned" + Utils.getSvgName(Utils.id());
+        String file = String.format("boundsAligned_%s_%s_%s", annotation.getPeptide().getName(), annotation.getSpectrum().getScans(), Utils.getSvgName(Utils.id()));
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -89,8 +89,8 @@ public final class BoundsAlignedSVG {
         return all;
     }
 
-    public static String buildPrecursorAligned(Annotation stdAnnotation, double zeroDiff) {
-        String file = "precursorAligned" + Utils.getSvgName(Utils.id());
+    public static String buildPrecursorAligned(Annotation annotation, double zeroDiff) {
+        String file = String.format("precursorAligned_%s_%s_%s", annotation.getPeptide().getName(), annotation.getSpectrum().getScans(), Utils.getSvgName(Utils.id()));
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -98,7 +98,7 @@ public final class BoundsAlignedSVG {
             Element SVG = document.getDocumentElement();
             SVG.setAttribute("width", WIDTH);
             SVG.setAttribute("height", HEIGHT);
-            SVG.appendChild(getPrecursorAligned(document, stdAnnotation, zeroDiff));
+            SVG.appendChild(getPrecursorAligned(document, annotation, zeroDiff));
 
             SVGTranscoder transcoder = new SVGTranscoder();
 
@@ -111,9 +111,9 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getPrecursorAligned(Document document, Annotation stdAnnotation, double zeroDiff) {
+    private static Element getPrecursorAligned(Document document, Annotation annotation, double zeroDiff) {
         Element all = document.createElement("g");
-        all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
+        all.appendChild(AnnotationSVG.getElement(document, annotation));
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
@@ -125,12 +125,12 @@ public final class BoundsAlignedSVG {
         infoSVGBuilder.addLine(String.format("ZERO DIFF=%f", zeroDiff));
         appendix.appendChild(infoSVGBuilder.build());
 
-        String cut = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide().getPeptide()
-                : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
-        cut = cut.substring(0, stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).stream()
+        String cut = annotation.getType() == B
+                ? annotation.getPeptide().getPeptide()
+                : StringUtils.reverse(annotation.getPeptide().getPeptide());
+        cut = cut.substring(0, annotation.getAnnotations().get(annotation.getSpectrum().getPrecursorMass()).stream()
                 .max(Comparator.comparingInt(IonType::getNum)).get().getNum());
-        cut = stdAnnotation.getType() == B
+        cut = annotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
         Element cutSVG = AminoStringSVG.getElement(document, cut);
@@ -142,8 +142,8 @@ public final class BoundsAlignedSVG {
         return all;
     }
 
-    public static String buildPrecursorAligned(Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) {
-        String file = "precursorAligned" + Utils.getSvgName(Utils.id());
+    public static String buildPrecursorAligned(Annotation annotation, double zeroDiff, int idx, double l, double r) {
+        String file = String.format("precursorAligned_%s_%s_%s", annotation.getPeptide().getName(), annotation.getSpectrum().getScans(), Utils.getSvgName(Utils.id()));
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -151,7 +151,7 @@ public final class BoundsAlignedSVG {
             Element SVG = document.getDocumentElement();
             SVG.setAttribute("width", WIDTH);
             SVG.setAttribute("height", HEIGHT);
-            SVG.appendChild(getPrecursorAligned(document, stdAnnotation, zeroDiff, idx, l, r));
+            SVG.appendChild(getPrecursorAligned(document, annotation, zeroDiff, idx, l, r));
 
             SVGTranscoder transcoder = new SVGTranscoder();
 
@@ -164,9 +164,9 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getPrecursorAligned(Document document, Annotation stdAnnotation, double zeroDiff, int idx, double l, double r) {
+    private static Element getPrecursorAligned(Document document, Annotation annotation, double zeroDiff, int idx, double l, double r) {
         Element all = document.createElement("g");
-        all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
+        all.appendChild(AnnotationSVG.getElement(document, annotation));
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
@@ -178,16 +178,16 @@ public final class BoundsAlignedSVG {
         infoSVGBuilder.addLine(String.format("ZERO DIFF=%f", zeroDiff));
         appendix.appendChild(infoSVGBuilder.build());
 
-        Element splitted = getSplitted(document, stdAnnotation.getType(), idx, 0, l, r);
+        Element splitted = getSplitted(document, annotation.getType(), idx, 0, l, r);
         splitted.setAttribute("transform", "translate(0, 60)");
         appendix.appendChild(splitted);
 
-        String cut = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide().getPeptide()
-                : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
-        cut = cut.substring(idx, stdAnnotation.getAnnotations().get(stdAnnotation.getSpectrum().getPrecursorMass()).stream()
+        String cut = annotation.getType() == B
+                ? annotation.getPeptide().getPeptide()
+                : StringUtils.reverse(annotation.getPeptide().getPeptide());
+        cut = cut.substring(idx, annotation.getAnnotations().get(annotation.getSpectrum().getPrecursorMass()).stream()
                 .max(Comparator.comparingInt(IonType::getNum)).get().getNum());
-        cut = stdAnnotation.getType() == B
+        cut = annotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
         Element cutSVG = AminoStringSVG.getElement(document, cut);
@@ -246,8 +246,8 @@ public final class BoundsAlignedSVG {
         return splitted;
     }
 
-    public static String buildZeroAligned(Annotation stdAnnotation, double precursorDiff) {
-        String file = "zeroAligned" + Utils.getSvgName(Utils.id());
+    public static String buildZeroAligned(Annotation annotation, double precursorDiff) {
+        String file = String.format("zeroAligned_%s_%s_%s", annotation.getPeptide().getName(), annotation.getSpectrum().getScans(), Utils.getSvgName(Utils.id()));
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -255,7 +255,7 @@ public final class BoundsAlignedSVG {
             Element SVG = document.getDocumentElement();
             SVG.setAttribute("width", WIDTH);
             SVG.setAttribute("height", HEIGHT);
-            SVG.appendChild(getZeroAligned(document, stdAnnotation, precursorDiff));
+            SVG.appendChild(getZeroAligned(document, annotation, precursorDiff));
 
             SVGTranscoder transcoder = new SVGTranscoder();
 
@@ -268,9 +268,9 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getZeroAligned(Document document, Annotation stdAnnotation, double precursorDiff) {
+    private static Element getZeroAligned(Document document, Annotation annotation, double precursorDiff) {
         Element all = document.createElement("g");
-        all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
+        all.appendChild(AnnotationSVG.getElement(document, annotation));
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
@@ -282,12 +282,12 @@ public final class BoundsAlignedSVG {
         infoSVGBuilder.addLine(String.format("PRECURSOR DIFF=%f\n", precursorDiff));
         appendix.appendChild(infoSVGBuilder.build());
 
-        String cut = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide().getPeptide()
-                : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
-        cut = cut.substring(stdAnnotation.getAnnotations().get(0d).stream()
+        String cut = annotation.getType() == B
+                ? annotation.getPeptide().getPeptide()
+                : StringUtils.reverse(annotation.getPeptide().getPeptide());
+        cut = cut.substring(annotation.getAnnotations().get(0d).stream()
                 .min(Comparator.comparingInt(IonType::getNum)).get().getNum());
-        cut = stdAnnotation.getType() == B
+        cut = annotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
         Element cutSVG = AminoStringSVG.getElement(document, cut);
@@ -299,8 +299,8 @@ public final class BoundsAlignedSVG {
         return all;
     }
 
-    public static String buildZeroAligned(Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
-        String file = "zeroAligned" + Utils.getSvgName(Utils.id());
+    public static String buildZeroAligned(Annotation annotation, double precursorDiff, int splittedIdx, double l, double r) {
+        String file = String.format("zeroAligned_%s_%s_%s", annotation.getPeptide().getName(), annotation.getSpectrum().getScans(), Utils.getSvgName(Utils.id()));
         try {
             Document document = SVGDOMImplementation.getDOMImplementation()
                     .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -308,7 +308,7 @@ public final class BoundsAlignedSVG {
             Element SVG = document.getDocumentElement();
             SVG.setAttribute("width", WIDTH);
             SVG.setAttribute("height", HEIGHT);
-            SVG.appendChild(getZeroAligned(document, stdAnnotation, precursorDiff, splittedIdx, l, r));
+            SVG.appendChild(getZeroAligned(document, annotation, precursorDiff, splittedIdx, l, r));
 
             SVGTranscoder transcoder = new SVGTranscoder();
 
@@ -322,9 +322,9 @@ public final class BoundsAlignedSVG {
         return file;
     }
 
-    private static Element getZeroAligned(Document document, Annotation stdAnnotation, double precursorDiff, int splittedIdx, double l, double r) {
+    private static Element getZeroAligned(Document document, Annotation annotation, double precursorDiff, int splittedIdx, double l, double r) {
         Element all = document.createElement("g");
-        all.appendChild(AnnotationSVG.getElement(document, stdAnnotation));
+        all.appendChild(AnnotationSVG.getElement(document, annotation));
 
         Element appendix = document.createElement("g");
         appendix.setAttribute("class", "appendix");
@@ -336,16 +336,16 @@ public final class BoundsAlignedSVG {
         infoSVGBuilder.addLine(String.format("PRECURSOR DIFF=%f", precursorDiff));
         appendix.appendChild(infoSVGBuilder.build());
 
-        Element splitted = getSplitted(document, stdAnnotation.getType(), splittedIdx, stdAnnotation.getSpectrum().getPrecursorMass(), l, r);
+        Element splitted = getSplitted(document, annotation.getType(), splittedIdx, annotation.getSpectrum().getPrecursorMass(), l, r);
         splitted.setAttribute("transform", "translate(0, 60)");
         appendix.appendChild(splitted);
 
-        String cut = stdAnnotation.getType() == B
-                ? stdAnnotation.getPeptide().getPeptide()
-                : StringUtils.reverse(stdAnnotation.getPeptide().getPeptide());
-        cut = cut.substring(stdAnnotation.getAnnotations().get(0d).stream()
+        String cut = annotation.getType() == B
+                ? annotation.getPeptide().getPeptide()
+                : StringUtils.reverse(annotation.getPeptide().getPeptide());
+        cut = cut.substring(annotation.getAnnotations().get(0d).stream()
                 .min(Comparator.comparingInt(IonType::getNum)).get().getNum(), splittedIdx - 1); // idx -1 because string is indexed from zerp
-        cut = stdAnnotation.getType() == B
+        cut = annotation.getType() == B
                 ? cut
                 : StringUtils.reverse(cut);
         Element cutSVG = AminoStringSVG.getElement(document, cut);

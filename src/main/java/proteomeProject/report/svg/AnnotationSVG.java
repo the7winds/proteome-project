@@ -24,7 +24,7 @@ public final class AnnotationSVG {
     private static final String HEIGHT = "350";
 
     public static String buildAnnotationSVG(Annotation annotation) {
-        String file = "annotation" + Utils.getSvgName(Utils.id());
+        String file = String.format("annotation_%s_%s_%s", annotation.getPeptide().getName(), annotation.getSpectrum().getScans(), Utils.getSvgName(Utils.id()));
 
         Document document = SVGDOMImplementation.getDOMImplementation()
                 .createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
